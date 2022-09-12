@@ -23,7 +23,8 @@ const authToken = cookies.get("token");
 
 // stream chat instance
 const client = StreamChat.getInstance(apiKey);
-
+// export const serverUrl = 'http://localhost:5001/wise-sphere-355719/us-central1/app';
+export const serverUrl = 'http://localhost:5000';
 
 //create user instance
 if(authToken){

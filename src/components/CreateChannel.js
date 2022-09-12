@@ -6,7 +6,7 @@ import { useChatContext, useMessageContext } from 'stream-chat-react';
 
 
 //components
-import { UserList, ChannelInvite } from './'
+import { UserList, ChannelInvite, ChatError } from './'
 
 //assest
 import { CloseCreateChannel } from '../assets'
@@ -16,7 +16,6 @@ import { CloseCreateChannel } from '../assets'
 
 const ChannelNameInput = ({channelName = '', setChannelName}) => {
     
-
     const handleChange = (event) => {
           event.preventDefault();  
         
@@ -38,8 +37,9 @@ const CreateChannel = ({createType, isCreating, setIsCreating}) => {
     const {client, setActiveChannel} = useChatContext();
     const [selectedUsers, setSelectedUsers] = useState([client.userID || '']);
     const [channelName, setChannelName] = useState('');
-    const [userChannels, setUserChannels] = useState([])
-
+    const [userChannels, setUserChannels] = useState([]);
+    const [hasError, setHasError] = useState(false);
+    const [errMsg, setErrMsg] = useState();
  
 
     //send CreateChannel request
@@ -99,11 +99,17 @@ const CreateChannel = ({createType, isCreating, setIsCreating}) => {
             
 
         } catch (error) {
-            console.log(error)
+            console.log(error.message)
+            setTimeout(() => {
+                setErrMsg(error.message)
+                setHasError(true)
+            }, 3000);
+            
         }
 
     };
-
+    const InvalidChatId = ChatError(errMsg);
+    
     return (
         <div className="create-channel__container">
             <div className="create-channel__header">
@@ -111,6 +117,7 @@ const CreateChannel = ({createType, isCreating, setIsCreating}) => {
                 <CloseCreateChannel setIsCreating={setIsCreating}/>
             </div>
             {createType === 'team' && <ChannelNameInput channelName={channelName} setChannelName={setChannelName} />}
+            {/* { hasError && <InvalidChatId />} */}
             <UserList  isCreating={isCreating} setSelectedUsers={setSelectedUsers} />
             <div className="create-channel__button-wrapper">
                 <p onClick={createChannel}>{createType==='team' ? 'Create Channel' : 'Create Message Group' } </p>

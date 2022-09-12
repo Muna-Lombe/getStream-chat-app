@@ -60,17 +60,29 @@
     color: #05245a;
     font-weight: 900;
   }
-  
+  .auth__form-container_fields-content_header{
+    display:flex; 
+    flex-direction:row;
+    justify-content:space-between; 
+    padding: 0px;
+    margin: 0.5rem 0rem;
+  }
+  .auth__form-container_fields-content_header p {
+    margin: 0px;
+  }
   .auth__form-container_fields-content_input {
+    height: auto;
     display: flex;
     flex-direction: column;
     position: relative;
-  
-    margin: 1rem 0rem;
+    margin: 0.5rem 0rem;
   }
-  
+  .with_signup {
+    height: auto;
+    transition: height 1s ease;
+  }
   .auth__form-container_fields-content_input label {
-    margin-bottom: 0.45rem;
+    margin: 0.45rem 0;
     color: rgb(61, 79, 88);
     font-size: 12px;
     font-family: Arial, Helvetica, sans-serif;
@@ -188,6 +200,42 @@
     .auth__form-container_fields-content_input-password {
       right: 3%;
     }
+  }
+  .auth__form-error_no-user:empty {
+    width: 90%;
+    height: 0rem;
+    transition: height 2s ease, width 2s 2s ease;
+  }
+  .auth__form-error_no-user {
+    width: 90%;
+    height: 3rem;
+    display: flex;
+    justify-content: center;
+    margin: 4px 0px;
+    transition: height 1s ease, width 2s 2s ease;
+
+  }
+  
+  .auth__form-error_no-user p{
+    font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+    font-size: 16px;
+    font-weight: normal;
+    color: rgba(176, 18, 18, 0.845);
+    padding: 2px 6px;
+    width: 100%;
+    height: 100%;
+    display: inline;
+    margin: 0px;
+    border-radius: 5px;
+    border: 1px solid firebrick;
+    overflow-y: hidden;
+    
+
+  }
+  .auth__form-error_no-user span{
+    cursor: pointer;
+    text-decoration: underline;
+    color:#0066ff;
   }
   
   .app__wrapper {
