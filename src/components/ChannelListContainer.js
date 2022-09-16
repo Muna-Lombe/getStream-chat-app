@@ -29,13 +29,15 @@ const Sidebar = ({logout}) => (
 const CompanyHeader = () => (
     <div className="channel-list__header">
         <p className="channel-list__header__text">
-            Medipager
+            Simple Chat App
         </p>
     </div>
 );
 
 const customChannelTeamFilter=(channels) => {
-    const teamChannels = channels.filter((channel) => channel.type === 'team')
+    const teamChannels = channels.filter((channel) => (
+        channel.type === 'team' 
+        ))
     // console.log(`team channels: `,teamChannels)
 
     return teamChannels
@@ -57,7 +59,7 @@ const ChannelListContent = ({ isCreating, setIsCreating, setCreateType, setIsEdi
         window.location.reload();
     };
 
-    const filters = { members: {$in: [client.userID]} }
+    const filters = { members: {$in: [client.userID]}, joined: {$eq: true} }
     return (
         <>
             <Sidebar logout={logout} />

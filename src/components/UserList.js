@@ -14,7 +14,10 @@ const ListContainer = ({isCreating, isEditing, children}) => {
                 {/* <p>Invite</p> */}
                 {(isEditing || isCreating) && <p>Invite</p>}
             </div>
-            {children}
+            <div className="user-list__content">
+                {children}
+            </div>
+            
         </div>
     )
 };
@@ -48,24 +51,46 @@ const  UserItem = ({user, setSelectedUsers, isCreating, isEditing}) => {
 
     const SetInvite = () => {
         return(
-            <div onClick={toggleInvite} >
-
-                { selected 
-                    ? <InviteIcon /> 
-                    : <div className="user-item__invite-empty" />
+            <div onClick={!( user.joinedStatus === false ) ? toggleInvite : undefined} disabled={( user.joinedStatus === false )}>
+                
+                { 
+                    isCreating ?
+                        (selected ? 
+                        <InviteIcon /> 
+                        : <div className="user-item__invite-empty" />
+                        )
+                        : ''
+                    }
+                {
+                    isEditing ?
+                    (
+                        ( user.joinedStatus === false  ) ?
+                            <div className="user-item__invite-no-invite">/</div>
+                            : selected ?
+                                <InviteIcon /> 
+                                : <div className="user-item__invite-empty" />
+                        
+                    )
+                    :''
+                    
                 }
+                    
             </div>
         )
     }
-
     return(
         <div className="user-item__wrapper" >
             <div className="user-item__name-wrapper">
                 <Avatar image = {user.image} name={user.fullname || user.id} size={32}/>
+                
                 <p className="user-item__name">{user.fullName || user.id}</p>
             </div>
-            
-            {(isEditing || isCreating)  && <SetInvite /> }
+            {
+                ( user.joinedStatus === false )
+                &&
+                <p className="user-item__pending-status">Invite pending</p>
+            }
+            {(isEditing || isCreating) && <SetInvite /> }
         </div>
     )
 };
@@ -83,8 +108,8 @@ const UserList = ({setSelectedUsers, activeChannelMembers, excludeChannelMembers
 
     
     const isModerator=() =>{
-        console.log("moderator: ", channel?.data?.moderator) 
-        console.log("user: ", client?.userID) 
+        // console.log("moderator: ", channel?.data?.moderator) 
+        // console.log("user: ", client?.userID) 
     }
 
     // isModerator();
@@ -110,27 +135,49 @@ const UserList = ({setSelectedUsers, activeChannelMembers, excludeChannelMembers
                     
                     // setting channel members
                     if(activeChannelMembers){
-                        filteredUsers = response.users.filter((user) => (activeChannelMembers.includes(user.id)))
+                        // only iterate trough
+                        // console.log("activ", activeChannelMembers)
+                        filteredUsers = response.users.filter((user) => (activeChannelMembers.find((member)=>member.id === user.id)))
+                        filteredUsers = filteredUsers.map((user) => (
+                            {...user, joinedStatus: activeChannelMembers.find((member) => member.id === user.id).joinedStatus, }
+                        ))
+                        // console.log(response.users,"filtered users", filteredUsers)
                     }
                     if(isEditing){
-                        filteredUsers = response.users.filter((user) => (!excludeChannelMembers.includes(user.id)))
+                        // console.error("filtered usrs:", filteredUsers,excludeChannelMembers)
+                        filteredUsers = response.users.filter((user) => {
+                            return !excludeChannelMembers.some((member) => member.id === user.id)
+                        })
+                        
+                        //////////////////////////////////
+                        // filteredUsers = response.users.map((user) => {
+                        //     // console.log("bo status:", excludeChannelMembers)
+                        //     let userHas =  [...excludeChannelMembers].find((member)=>{return member.id === user.id}) || {joinedStatus:"not Invited"}
+                        //     // console.log("status", userHas.joinedStatus)
+                        //     return {...user, joinedStatus: userHas.joinedStatus }
+                        // })
+                        //////////////////////////////////
+                        //!(excludeChannelMembers.find((member)=>member.id === user.id)))
+                        // filteredUsers = response.users
+                        // console.log("using",response.users,"exfiltered users from", excludeChannelMembers, "to", filteredUsers)
                     }
 
                   
                     setUsers(filteredUsers || response.users);
-                 
+                    // console.log("usrs", users, filteredUsers)
                 }else {
                     setListEmpty(true);
                 }
                 
                 //filter out existing channel members
-                if(activeChannelMembers){
-                    console.log("active channel members: ", activeChannelMembers);
-                }
+                // if(activeChannelMembers){
+                //     console.log("active channel members: ", activeChannelMembers);
+                // }
                 
 
                 
             } catch (error) {
+                console.error("catch error", error)
                 setError(true);
             }
             setLoading(false);
@@ -138,7 +185,7 @@ const UserList = ({setSelectedUsers, activeChannelMembers, excludeChannelMembers
         }
 
         if(client) getUsers();
-    }, [])
+    }, [activeChannelMembers])
     
     // Error handling
     if(error){
@@ -164,7 +211,8 @@ const UserList = ({setSelectedUsers, activeChannelMembers, excludeChannelMembers
 
     return (
         <ListContainer isEditing={isEditing} isCreating={isCreating}>
-            {loading ? <div className="user-list__message"> loading users... </div> 
+            {loading 
+            ? <div className="user-list__message"> loading users... </div> 
             : (
                 users?.map((user, i) => (
                     <UserItem 

@@ -6,40 +6,49 @@ import { useChatContext, useMessageContext } from 'stream-chat-react';
 
 
 //components
-import { UserList, ChannelInvite, ChatError } from './'
+import { UserList, ChannelInvite, ChatError, ChannelNameInput } from './'
 
 //assest
 import { CloseCreateChannel } from '../assets'
 
 
+// ChannelNameInput
 
-
-const ChannelNameInput = ({channelName = '', setChannelName}) => {
-    
-    const handleChange = (event) => {
-          event.preventDefault();  
+// const ChannelNameInput = ({channelName = '', setChannelName, hasError, errMsg}) => {
+//     const InvalidChatId =()=>{
+//          return (
+//              <div className="channel-name-input__wrapper__error">
+//             {hasError && <ChatError classname="InvalidChatId" errMsg={errMsg} />}
+//         </div>
+//     )};
+//     const handleChange = (event) => {
+//           event.preventDefault();  
         
-          setChannelName(event.target.value);
-    };
-    return (
-        <div className="channel-name-input__wrapper">
-           <p>Name</p>
-           <input value = {channelName} onChange={handleChange} placeholder="channel-name (no spaces)" />
-           <p>Add Members</p>
-
+//           setChannelName(event.target.value);
+//     };
+//     return (
+//         <div className="channel-name-input__wrapper">
+//             <div className="channel-name-input__wrapper__header">
+//                 <p>Name</p>
+//             </div>
             
-
-        </div>
-    )
-};
+//             <InvalidChatId />
+//             <div className="channel-name-input__wrapper__input">
+//                 <input value = {channelName} onChange={handleChange} placeholder="channel-name (no spaces)" />
+//             </div>
+            
+            
+//         </div>
+//     )
+// };
 const CreateChannel = ({createType, isCreating, setIsCreating}) => {
     //Setting selected user
     const {client, setActiveChannel} = useChatContext();
     const [selectedUsers, setSelectedUsers] = useState([client.userID || '']);
     const [channelName, setChannelName] = useState('');
-    const [userChannels, setUserChannels] = useState([]);
+    // const [userChannels, setUserChannels] = useState([]);
     const [hasError, setHasError] = useState(false);
-    const [errMsg, setErrMsg] = useState();
+    const [errMsg, setErrMsg] = useState('');
  
 
     //send CreateChannel request
@@ -62,33 +71,34 @@ const CreateChannel = ({createType, isCreating, setIsCreating}) => {
             // only find target contact if new channel created successfuly
             if(newChannel?.id){
                 const userChan = async (userId) => {
-                    let chan = client.getChannelByMembers('messaging', {members:[client.userID,userId]});
-                    await chan.create();
+                    let chat = client.getChannelByMembers('messaging', {members:[client.userID,userId]});
+                    await chat.create();
 
-                    console.log('id: ',chan.id)
+                    console.log('id: ',chat.id)
                     console.log('chanid: ',newChannel?.id)
 
                     // only send message if channel found or created successfuly
-                    if(chan?.id){
-
-                        chan.sendMessage({ 
-                            text: `You were invited to a channel`,
+                    if(chat?.id){
+                        await newChannel.inviteMembers([userId.toString()])
+                        chat.sendMessage({ 
+                            text: `You were invited to join the channel #${channelName}`,
                             isInvite:true,
-                            channel_id: {type: newChannel?.type, id: newChannel?.id}
+                            channel_data: {type: newChannel?.type, id: newChannel?.id},
+                            receiver:userId
                         })
-                        
-                        setUserChannels((prevChans) => [...prevChans, chan])
+                        // why do i need to set user channel?
+                        // setUserChannels((prevChans) => [...prevChans, chat])
                     }else{
-                        console.log('chan missing, trying again')
+                        console.log('chat missing, trying again')
                       
                         
                     }
                 };
 
                 //loop through user id and set channels
-                selectedUsers.forEach((userId)=> userId !== client.userID && userChan(userId))
-                console.log('user-channels', userChannels)
-                await newChannel.watchers();
+                selectedUsers.forEach(async(userId)=> {userId !== client.userID && await userChan(userId)})
+                // console.log('user-channels', userChannels)
+                // await newChannel.watchers();
             }
 
             //reset fields
@@ -100,30 +110,39 @@ const CreateChannel = ({createType, isCreating, setIsCreating}) => {
 
         } catch (error) {
             console.log(error.message)
-            setTimeout(() => {
-                setErrMsg(error.message)
-                setHasError(true)
-            }, 3000);
+            
+            setErrMsg(error.message)
+            setHasError(true)
+            
             
         }
 
     };
-    const InvalidChatId = ChatError(errMsg);
     
+    const CreateChannelHeader = ()=>(
+        <div className="create-channel__header">
+            <p>{createType === 'team' ? 'Create a New Channel' : 'Send  Direct Message'}</p>
+            <CloseCreateChannel setIsCreating={setIsCreating} />
+        </div>
+    )
     return (
         <div className="create-channel__container">
-            <div className="create-channel__header">
-                <p>{createType === 'team' ? 'Create a New Channel' : 'Send  Direct Message'}</p>
-                <CloseCreateChannel setIsCreating={setIsCreating}/>
+            <CreateChannelHeader />
+            <div className="create-channel__content">
+                {createType === 'team' && <ChannelNameInput channelName={channelName} setChannelName={setChannelName} hasError={hasError} errMsg={errMsg} />}
+                <div className="create-channel__user-list">
+                    <p className='add_member'>Add Members</p>
+                    <UserList  isCreating={isCreating} setSelectedUsers={setSelectedUsers} />
+                    <div className="create-channel__button-wrapper">
+                        <p onClick={createChannel}>{createType==='team' ? 'Create Channel' : 'Create Message Group' } </p>
+                    </div>  
+                </div>
+                
             </div>
-            {createType === 'team' && <ChannelNameInput channelName={channelName} setChannelName={setChannelName} />}
-            {/* { hasError && <InvalidChatId />} */}
-            <UserList  isCreating={isCreating} setSelectedUsers={setSelectedUsers} />
-            <div className="create-channel__button-wrapper">
-                <p onClick={createChannel}>{createType==='team' ? 'Create Channel' : 'Create Message Group' } </p>
-            </div>
+            
         </div>
     )
 }
+
 
 export default CreateChannel

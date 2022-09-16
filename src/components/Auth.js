@@ -36,7 +36,7 @@ const Auth =  () => {
     const [form, setForm] = useState(initialState)
     const [isSignup, setIsSignup] = useState(false);
     const [hasError, setHasError] = useState(false)
-    const [errMsg, setErrMsg] = useState()
+    const [errMsg, setErrMsg] = useState('')
     const handleChange = (event) =>{
         setForm({...form, [event.target.name]: event.target.value});
     };
@@ -57,11 +57,13 @@ const Auth =  () => {
         });
         
         if (data.errCode) {
-            if (data.message === "Request failed with status code 500") setErrMsg("Looks like something is wrong on our side, please try again...")
-            setHasError((prevState)=> !prevState)
+            (data.message.toString().includes("Request failed with status code 500"))
+            ? setErrMsg("Looks like something is wrong on our side, please try again in a minute...")
+            : setErrMsg('')
+            !hasError && setHasError((prevState)=> !prevState)
             setTimeout(() => {
                 setHasError(false)
-            }, 50000);
+            }, 60000);
         }
         if (data.token) {
             console.log("success")
@@ -103,7 +105,7 @@ const Auth =  () => {
     }
     
     // const Error ={
-    const UserNotFound = UserError(errMsg, switchMode)//()=>{ return(
+    const UserNotFound = UserError//()=>{ return(
     //             errMsg
     //             ? <p>{errMsg}</p>
     //             : <p >
@@ -121,7 +123,7 @@ const Auth =  () => {
                         {/* {hasError && <UserNotFound/>} */}
                     </div>
                     <div className='auth__form-error_no-user'>
-                        {hasError && <UserNotFound />}
+                        {hasError && <UserNotFound errMsg={errMsg} switchMode={switchMode} />}
                     </div>
                         
                     <form onSubmit={()=>{}}>

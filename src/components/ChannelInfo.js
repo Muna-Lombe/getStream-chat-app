@@ -14,25 +14,53 @@ import { BackIcon } from '../assets'
 
 const ChannelInfo = ({isEditing, setIsEditing, setShowInfo}) => {
     const { channel,client} = useChatContext();
-    
-    const [ activeChannelMembers, setActiveChannelMembers] = useState(Object.values(channel.state.members).map((member) => member.user.id))
+    const [ activeChannelMembers, setActiveChannelMembers] = useState(
+        Object.values(channel.state.members).map((member) => {
+            if (
+                member.user_id === channel.data.created_by.id
+                ||
+                (
+                    (member.invite_accepted_at !== undefined || (typeof member.invite_accepted_at) !== "undefined")
+                    || 
+                    (member.invite_rejected_at !== undefined || (typeof member.invite_rejected_at) !== "undefined" )
+                )
+                
+                ){
+                    
+                    return {id: member.user.id, joinedStatus: true}
+                }
+            if (
+                (
+                    (member.invite_accepted_at === undefined || (typeof member.invite_accepted_at) === "undefined")
+                    && 
+                    (member.invite_rejected_at === undefined || (typeof member.invite_rejected_at) === "undefined" )
+                )
+                ){
+                    
+                    return {id: member.user.id, joinedStatus: false}
+                }
+            
+            return member
+            
 
-    console.log("isediting", isEditing)
-    console.log("channel: ", channel)
+        })
+        )
+
+    // console.log("isediting", isEditing)
+    // console.log("channel: ", channel)
 
     //leave channel
     const leaveChannel = async () => {
-        console.log("leaving channel...")
+        // console.log("leaving channel...")
         
-       
+    
         try {
              await channel.removeMembers([client.userID]);
            
-            console.log("You successfuly left the channel!")
+            window.alert("You successfuly left the channel!")
             window.location.reload();
         } catch (error) {
- 
-            console.log(error);
+            console.error(error);
         } 
      };
 
@@ -88,7 +116,7 @@ const ChannelInfo = ({isEditing, setIsEditing, setShowInfo}) => {
             {
                 isEditing
                 ?  <EditChannel setIsEditing={setIsEditing} isEditing={isEditing} excludeChannelMembers={activeChannelMembers}/>
-                :  <UserList activeChannelMembers={activeChannelMembers}/>
+                :  <UserList activeChannelMembers={activeChannelMembers} />
 
             }
             { !isEditing 

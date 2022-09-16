@@ -2,25 +2,24 @@ import axios from 'axios';
 import React, {useState} from 'react'
 import { useChatContext } from 'stream-chat-react'
 
+import { UserList, ChannelInvite ,ChannelNameInput} from "./"
 
-import { UserList, ChannelInvite } from "./"
 
-const ChannelNameInput = ({channelName = '', setChannelName}) => {
+// const ChannelNameInput = ({channelName = '', setChannelName}) => {
     
 
-    const handleChange = (event) => {
-          event.preventDefault();  
+//     const handleChange = (event) => {
+//           event.preventDefault();  
         
-          setChannelName(event.target.value);
-    };
-    return (
-        <div className="channel-name-input__wrapper">
-           <p>Name</p>
-           <input value = {channelName} onChange={handleChange} placeholder="channel-name (no spaces)" />
-           <p>Add Members</p>
-        </div>
-    )
-};
+//           setChannelName(event.target.value);
+//     };
+//     return (
+//         <div className="channel-name-input__wrapper">
+//            <p>Name</p>
+//            <input value = {channelName} onChange={handleChange} placeholder="channel-name (no spaces)" />
+//         </div>
+//     )
+// };
 
 const EditChannel = ({setIsEditing, excludeChannelMembers, isEditing}) => {
     const { channel,client} = useChatContext();
@@ -29,7 +28,8 @@ const EditChannel = ({setIsEditing, excludeChannelMembers, isEditing}) => {
     const [userChannels, setUserChannels] = useState([])
     const [submitError, setSubmitError] = useState(false)
     const [unclearError, setUnclearError] = useState(false)
-    
+    const [hasError, setHasError] = useState(false);
+    const [errMsg, setErrMsg] = useState('');
     // console.log('curr-user',client)
     
 
@@ -41,31 +41,50 @@ const EditChannel = ({setIsEditing, excludeChannelMembers, isEditing}) => {
         event.preventDefault();
         setSubmitError(false)
         setUnclearError(false)
-    
+        
         try {
             // console.log("all members: ", selectedUsers )
             // console.log('curr-user',client.getChannelByMembers('messaging', {members:['63e9f556b3609c8e5524295114ce14f4']} )  )
             
-            if(selectedUsers.length > 0||channelName !== channel.data.name){
+            if(selectedUsers.length > 0 || channelName !== channel.data.name){
                 // channelName !== channel.data.name  && await channel.update({ name: channelName}, {text: updateMsg});
                 // selectedUsers.length > 0 && await channel.addMembers(selectedUsers, {text: addMemMsg});
+                if(selectedUsers.length){
+
+                }
+                if(channelName !== channel.data.name){
+
+                }
                 const options = {invite:'pending'};
 
-
+                
                 // fetch or set channel to send invite to
                 const userChan = async (userId) => {
-                    let chan = client.getChannelByMembers('messaging', {members:[userId]})
-                    chan = chan.id ? chan : await client.channel('messaging', {invites:[client.userID,userId], options})
-                    chan.create();
-                    chan.sendMessage({ 
-                        text: `You were invited to a channel`
-                    })
-                    console.log('id: ',chan?.id)
-
-                    setUserChannels((prevChans) => [...prevChans, chan])
+                    let chat = client.getChannelByMembers('messaging', {members:[client.user?.id, userId]})
+                    chat.watch()
+                    console.log("new chat members", chat)
+                    // chat = chat.id ? chat : await client.channel('messaging', {invites:[client.user?.id,userId], options})
+                    // chan
+                    // chan.create();
+                    await channel.inviteMembers([userId.toString()])
+                    chat.sendMessage({ 
+                            text: `You were invited to join the channel #${channelName}`,
+                            isInvite:true,
+                            channel_data: {type: channel?.type, id: channel?.id},
+                            receiver:userId
+                        })
+                    // chan.sendMessage({ 
+                    //     text: `You were invited to join the channel #${channelName} `, 
+                    //     receiver: userId
+                    // })
+                    // console.log('id: ',chan?.id)
+                    
+                    setUserChannels((prevChans) => [...prevChans, chat])
+                    // chat.stopWatching()
                 };
 
                 //loop through user id and set channels
+                console.log("su", selectedUsers)
                 selectedUsers.forEach((user)=> userChan(user))
                 console.log('user-channels', userChannels)
 
@@ -126,6 +145,8 @@ const EditChannel = ({setIsEditing, excludeChannelMembers, isEditing}) => {
         } catch (error) {
             console.log("error", error)
             setUnclearError((prevState) => !prevState)
+            setErrMsg(error.message)
+            setHasError(true)
         }
 
     };
@@ -185,15 +206,17 @@ const EditChannel = ({setIsEditing, excludeChannelMembers, isEditing}) => {
             </>       
         )
     }
-
+    const EditChannelHeader =()=> (
+         <div className="edit-channel__header">
+            <p>
+                Edit Channel
+            </p>
+        </div>
+)
     return (
         <div className='edit-channel__container'>
-            <div className="edit-channel__header">
-                <p>
-                    Edit Channel
-                </p>
-            </div>
-            <ChannelNameInput channelName={channelName} setChannelName={setChannelName} />
+            <EditChannelHeader/>
+            <ChannelNameInput channelName={channelName} setChannelName={setChannelName} hasError={hasError} errMsg={errMsg}  />
             <UserList 
                 setSelectedUsers={setSelectedUsers} 
                 isEditing={isEditing} 

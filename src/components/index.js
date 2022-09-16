@@ -14,4 +14,5 @@ export { default as UserInfo} from './UserInfo';
 export { default as ResultsDropDown} from './ResultsDropDown';
 export { default as ChannelInvite} from './ChannelInvite';
 export { default as ChannelMessage} from './ChannelMessage';
-export { ChatError, UserError } from './ErrorType';
+export { default as ChannelNameInput} from './ChannelNameInput';
+export * from './ErrorType';

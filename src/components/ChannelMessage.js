@@ -1,4 +1,4 @@
-import React, { useRef, useState } from 'react';
+import React, { useCallback, useMemo, useRef, useState } from 'react';
 import {
   Attachment,
   Avatar,
@@ -29,27 +29,109 @@ const ChannelMessage =  () => {
   const { client } = useChatContext();
   const [reactionEnabled, setReactionEnabled] = useState(!isReactionEnabled);
   const [detailedReactions, setDetailedReactions] = useState(showDetailedReactions);
-  const [channel, setChannel] = useState({id:1, name:'Apache'});
+  const [channel, setChannel] = useState({id:message.channel_data?.id, name:'Apache'});
   const [inviteSet, setInviteSet] = useState(false);
+  const [inviteState, setInviteState] = useState("invited");
+
   
+ 
+  
+    //accept invites to channel
+    const acceptInvite = () =>{
+        try {
+            // let chan
+            // // accept the invite 
+            (async()=>{
+                
+                let chan = await updateChannel()
+                // &&
+                console.log("accepting invite", chan)
+                // &&
+                await chan.acceptInvite({ 
+                    message: { text: `${client.user.name || client.user.name} has joined this channel!` }, 
+                })
+                // &&
+                console.log("accepted!")
+                setInviteState("accepted")
 
-    /// checking for and setting the channel
-    const checkChannels = async() =>{
-        const filters = {id: message.channel_id?.id, type: message.channel_id?.type};
-        console.log('shit set')
-        const getChan = await client.queryChannels(filters)
-        setChannel(getChan)
+        })()
             
-        
 
+            
+        } catch (error) {
+            console.log(error)
+            
+        }
     }
-    if(message.isInvite === true && inviteSet === false) {
-        checkChannels()
-        setInviteSet(true)
-        console.log(channel)
-        console.log(message)
+    const rejectInvite = ()=>{
+        
+        try{
+        // //rejecting invites
+            (async ()=>(
+                await updateChannel()
+                &&
+                console.log("rejecting invite", channel)
+                &&
+                await channel.rejectInvite()
+                &&
+                console.log("rejected!")
+                &&
+                setInviteState("rejected")
+            ))()
+        } catch (error) {
+            console.log(error)
+            
+        }
+    }
+    // reject invites to channel
+    
+    
+    /// checking for and setting the channel
+    
+    const updateChannel = useCallback(
+      async () =>{
+        const doUpdate = async()=>{
+            console.log("curr usr", message.receiver)
+            const filters = {id: message.channel_data?.id, type: message.channel_data?.type, members: {$in:[message.receiver.toString()]}};
+            // console.log('shit set')
+            
+            let chans = await client.queryChannels(filters)
+            let newChan
+            console.log("getChan", chans)
+            chans.map((ch)=>{
+                console.log("ch", ch.data.id)
+                console.log("channel match", ch.id === message.channel_data.id)
+                if(ch.id === message.channel_data.id){
+                    console.log("setting new channel")
+                    setChannel(ch) 
+                    newChan = ch
+                    console.log("new channel set", channel)
 
-    };
+                }
+            })
+            if(message.isInvite === true && inviteSet === false) {
+            console.log("received invite from ", message.user.name)
+                setInviteSet(true)
+                console.log("new channel", channel)
+                console.log(message)
+            };
+            return newChan
+        }
+        try {
+            const res = await doUpdate();
+            return res
+            // return !(JSON.stringify(channel).includes("{id:1, name:'Apache'}"));
+        } catch (err) {
+            return err;
+        }
+        
+        
+    },
+      [message.receiver],
+    )
+     
+
+    // updateChannel();
 
 
 //   console.log('isrec:', isReactionEnabled)
@@ -99,7 +181,7 @@ const ChannelMessage =  () => {
             <div className='str-chat__message-team-actions'>
                 <ReactIcon setReactionEnabled={setReactionEnabled}  />
 
-                <ReplyIcon />
+                <ReplyIcon  />
 
                 <MoreIcon setDetailedReactions={setDetailedReactions} />
 
@@ -121,7 +203,12 @@ const ChannelMessage =  () => {
             </div>
             
             <div className='str-chat__message-team-content str-chat__message-team-content--top str-chat__message-team-content--text'>
-                {message.isInvite ? <ChannelInvite channel={channel} user={message.user}/> : <RegularMessage/> }   
+                {
+                    message.isInvite 
+                    ?  <ChannelInvite message={{text: message.text, chanId: channel.id, user: message.user}} acceptInvite={acceptInvite} rejectInvite={rejectInvite} inviteState={inviteState}/> 
+    
+                    : <RegularMessage/> 
+                }   
             </div>
 
             <div className='str-chat__message-team--received'>

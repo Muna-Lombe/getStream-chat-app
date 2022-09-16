@@ -9,13 +9,7 @@ export const GiphyContext = React.createContext({});
 
 const ChannelInner = ({ setIsEditing, setShowInfo }) => {
   const [giphyState, setGiphyState] = useState(false);
-  const { client } = useChatContext();
-  const [channel, setChannel] = useState('');
-
   const { sendMessage } = useChannelActionContext();
-  const [hasChannelInvite, setHasChannelInvite] = useState(true)
-  const [accept, setAccept] = useState(false)
-  const [reject, setReject] = useState(false)
   
 
 
@@ -66,9 +60,10 @@ const TeamChannelHeader = ({ setIsEditing, setShowInfo }) => {
     const { client } = useChatContext();
   
     const MessagingHeader = () => {
-      const members = Object.values(channel.state.members).filter(({ user }) => user.id !== client.userID);
+    
+      let members = Object.values(channel.state.members).filter(({ user }) => user.id !== client.userID );
       const additionalMembers = members.length - 3;
-  
+      
       if(channel.type === 'messaging') {
         return (
           <div className='team-channel-header__name-wrapper'>
