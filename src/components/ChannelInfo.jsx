@@ -4,9 +4,9 @@ import Cookies from 'universal-cookie/es6'
 
 // useChatContext
 
-import { UserList } from "./"
-import { EditChannel } from "./"
-import { CloseCreateChannel } from '../assets'
+import { UserList } from "."
+import { EditChannel } from "."
+import { CloseBtn } from '../assets'
 import { EditIcon } from '../assets'
 import { BackIcon } from '../assets'
 
@@ -108,7 +108,7 @@ const ChannelInfo = ({isEditing, setIsEditing, setShowInfo}) => {
                         ? <span style={{ display: 'flex' }} onClick={() => setIsEditing((prevState) => !prevState)}>
                             <EditIcon />
                         </span> //
-                        : <CloseCreateChannel setIsEditing={setIsEditing} />
+                        : <CloseBtn setIsEditing={setIsEditing} />
                     }
                 </p>
                 

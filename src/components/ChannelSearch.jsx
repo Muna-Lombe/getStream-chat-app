@@ -5,7 +5,7 @@ import { getChannel, useChatContext } from 'stream-chat-react'
 import {SearchIcon} from '../assets'
 
 //components
-import {ResultsDropDown} from "./"
+import {ResultsDropDown} from "."
 
 
 

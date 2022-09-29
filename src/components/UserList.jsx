@@ -9,6 +9,10 @@ import {InviteIcon} from "../assets"
 const ListContainer = ({isCreating, isEditing, children}) => {
     return(
         <div className="user-list__container">
+            {(isCreating || isEditing) ?
+                <p className='add_member'>Add Members</p>
+                : ""
+            }
             <div className="user-list__header">
                 <p>User</p>
                 {/* <p>Invite</p> */}

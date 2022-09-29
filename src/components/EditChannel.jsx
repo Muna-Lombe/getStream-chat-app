@@ -2,7 +2,7 @@ import axios from 'axios';
 import React, {useState} from 'react'
 import { useChatContext } from 'stream-chat-react'
 
-import { UserList, ChannelInvite ,ChannelNameInput} from "./"
+import { UserList, ChannelInvite ,ChannelNameInput} from "."
 
 
 // const ChannelNameInput = ({channelName = '', setChannelName}) => {
@@ -33,7 +33,7 @@ const EditChannel = ({setIsEditing, excludeChannelMembers, isEditing}) => {
     // console.log('curr-user',client)
     
 
-
+    // channel.data.members.some
     //send editChannel request
     const saveEdit = async(event) => {
         const updateMsg = `Channel Name Changed by ${channel._client?.user?.fullName || channel._client?.user?.name} !\n`;

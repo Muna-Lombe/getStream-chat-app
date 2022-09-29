@@ -1,6 +1,6 @@
 export { AddChannel } from './AddChannel';
 export { ChannelInfo } from './ChannelInfo';
-export { CloseCreateChannel } from './CloseCreateChannel';
+export { CloseBtn } from './CloseBtn';
 export { InviteIcon } from './InviteIcon';
 export { LightningBolt } from './LightningBolt';
 export { SearchIcon } from './SearchIcon';
@@ -10,3 +10,7 @@ export { OnlineStatusIcon } from './OnlineStatusIcon';
 export { ReactIcon } from './ReactIcon';
 export { ReplyIcon } from './ReplyIcon';
 export { MoreIcon } from './MoreIcon';
+export { SaveIcon } from './SaveIcon';
+export { UserIcon } from './UserIcon';
+export { HospitalIcon } from './HospitalIcon';
+export { LogoutIcon } from './LogoutIcon';

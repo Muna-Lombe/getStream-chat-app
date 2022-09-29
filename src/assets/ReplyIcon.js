@@ -1,8 +1,11 @@
 
 import React from 'react';
 
-export const ReplyIcon = () => (
-  <p  style={{ display:'flex', justifyContent: 'center', alignItems: 'center' }}>
+export const ReplyIcon = ({openThread}) => (
+  <p  
+  style={{ display:'flex', justifyContent: 'center', alignItems: 'center' }}
+  onclick={()=>openThread()}
+  >
     <svg 
         id='reply' 
         width="16" 

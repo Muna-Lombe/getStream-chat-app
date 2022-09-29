@@ -1,8 +1,10 @@
 import React from 'react';
 
-export const EditIcon = () => (
-    <p style={{ marginLeft: '2px' }}>
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="28" height="28">
+export const EditIcon = ({onClick, size={w:null, h:null}}) => (
+    <p style={{ margin: '0px 0px 0px 2px' }}
+        onClick={onClick}
+    >
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width={size.w||"28"} height={size.h||"28"}>
             <path d="M49.7574005,3.641675c-0.2174988-0.1520998-0.4855995-0.2114999-0.7468987-0.1636999
                 c-0.2602997,0.0467-0.4914017,0.1949-0.6424026,0.4122999L25.3518009,36.9533768
                 c-0.0888004,0.1266975-0.1463013,0.2728996-0.1687012,0.4269981l-1.5179996,10.4318008

@@ -2,13 +2,20 @@ import axios from 'axios'
 import React, { useState } from 'react'
 import Cookies from 'universal-cookie/es6'
 import { UserError } from '.'
-import { serverUrl } from '../App'
+// import { serverUrl} from '../App'
 import signinImage from '../assets/signup.jpg'
 
 
+
 const cookies = new Cookies();
-        
-const s = sessionStorage.setItem.bind(sessionStorage)
+
+// REMOVE BEFORE DEPLOY --ONLY FOR DEV --TESTING MOBILE    
+const s =(k,v)=> {return sessionStorage.setItem(k,v)}//.bind(sessionStorage)
+
+// REMOVE BEFORE DEPLOY --ONLY FOR DEV --TESTING MOBILE
+const g =(k)=> {return sessionStorage.getItem(k)}//.bind(sessionStorage)
+
+
 const initialState = {
     fullName:"",
     username:"",
@@ -17,20 +24,64 @@ const initialState = {
     phoneNumber:"",
     avatarUrl:""
 };
+
+// FOR PROD---
+// let URL = "http://localhost:5000/auth";
+
+
+
+// REMOVE BEFORE DEPLOY --ONLY FOR DEV --TESTING MOBILE
+// remove url from storage
+if(g("URL")){
+    sessionStorage.removeItem('URL')
+}
+
+// REMOVE BEFORE DEPLOY --ONLY FOR DEV --TESTING MOBILE
+s("URL", "http://localhost:5000")
+let url =()=> { return g("URL")+"/auth"};
+
 export const dc = (en) => {
     const n = en.hash.toString().slice(en.hash.length - 4, en.hash.length).split("#")
     const ex = en.hash.slice(Number.parseInt(n[0]), (Number.parseInt(n[0]) + Number.parseInt(n[1])))
     // console.log("dehashed:",ex)
     return ex;
 }
-export const FA = async () => {
-    const URL = 'http://localhost:5000/auth';
-    const { data: res } = await axios.get(`${URL}/fetchauthor`)
-    cookies.set('atlas', res);
-    s('atlas', res)
 
-    return dc(res)
+export const FA = async () => {
+// REMOVE BEFORE DEPLOY --ONLY FOR DEV --TESTING MOBILE
+// const { data: res } = await axios.get(`${URL}/fetchauthor`)
+//         console.log("res", res)
+//         cookies.set('atlas', res);
+//         s('atlas', res.hash)
+
+//         return dc(res)
+
+    try {
+        
+        const { data: res } = await axios.get(`${url()}/fetchauthor`)
+        console.log("res", res)
+        cookies.set('atlas', res);
+        s('atlas', res.hash)
+
+        return dc(res)
+    } catch (error) {
+        console.log(error)
+        if(error.message.toString().toLowerCase().includes("network error")){
+            console.log("is net err")
+            setTimeout(() => {
+                FA()
+            }, 3000);
+            return 0
+        }
+        let get  = require('../assets/logs')
+        console.log("failed to fetch at localhost:5000, retrying with ", get["newUrl"].path)
+        let newURL = "http://"+get["newUrl"].path;
+        s('URL', newURL)
+        FA();
+    }
 }
+
+FA().then(res => res);
 
 const Auth =  () => {
     const [form, setForm] = useState(initialState)
@@ -40,34 +91,34 @@ const Auth =  () => {
     const handleChange = (event) =>{
         setForm({...form, [event.target.name]: event.target.value});
     };
+    // FA().then(res=>res);
     
     const handleSubmit = async (event) =>{
         event.preventDefault();
         
         const { username, password, phoneNumber, avatarUrl} = form;
         
-        const URL = serverUrl+"/auth";
 
-        const data = await axios.post(`${URL}/${isSignup ? 'signup' : 'login'}`, {fullName: form.fullName, username, password, phoneNumber, avatarUrl}
-        ).then((result) => {
+        const res = await axios.post(`${url()}/${isSignup ? 'signup' : 'login'}`, {fullName: form.fullName, username, password, phoneNumber, avatarUrl})
+        .then((result) => {
             console.log("res", result)
             return result.data
         }).catch((error) => {
-            return {errCode:2, message:error.message}
+            return {...error}
         });
-        
-        if (data.errCode) {
-            (data.message.toString().includes("Request failed with status code 500"))
-            ? setErrMsg("Looks like something is wrong on our side, please try again in a minute...")
-            : setErrMsg('')
+    
+        if (res.isAxiosError) {
+            (res.response.data.message.toString().toLowerCase().includes("user not found"))
+            ? setErrMsg('')
+                : setErrMsg(res.response.data.message)
             !hasError && setHasError((prevState)=> !prevState)
             setTimeout(() => {
                 setHasError(false)
             }, 60000);
         }
-        if (data.token) {
+        if (res.token) {
             console.log("success")
-            const { token, userId, hashedPassword, fullName, permissions, grants, api_key = FA().then(r => r) } = data
+            const { token, userId, hashedPassword, fullName, permissions, grants, api_key = FA().then(r => r) } = res
             //COMMENT THIS SECTION OUT TO TEST LASTER//
             cookies.set('token', token);
             cookies.set('userId', userId);
