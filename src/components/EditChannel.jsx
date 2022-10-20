@@ -73,11 +73,6 @@ const EditChannel = ({setIsEditing, excludeChannelMembers, isEditing}) => {
                             channel_data: {type: channel?.type, id: channel?.id},
                             receiver:userId
                         })
-                    // chan.sendMessage({ 
-                    //     text: `You were invited to join the channel #${channelName} `, 
-                    //     receiver: userId
-                    // })
-                    // console.log('id: ',chan?.id)
                     
                     setUserChannels((prevChans) => [...prevChans, chat])
                     // chat.stopWatching()
@@ -96,51 +91,6 @@ const EditChannel = ({setIsEditing, excludeChannelMembers, isEditing}) => {
             }else{
                 setSubmitError((prevState) => !prevState)
             }
-            
-            ///////////////////////////////////////////////////////////////
-            // sending invites
-            // const invite = client.channel('messaging', 'awesome-chat', { 
-            //     name: 'Founder Chat', 
-            //     members: ['thierry', 'tommaso'], 
-            //     invites: ['nick'], 
-            // }); 
-            
-            // await invite.create();
-            ///////////////////////////////////////////////////////////////
-
-            //////////////////////////////////////////////////////////////
-            // const rejected = client.queryChannels({ 
-            //     invite: 'pending', 
-            // }); 
-             
-            // //server side (query invites for user rob) 
-            // const invites = await client.queryChannels({ 
-            //     invite: 'pending', 
-            // },{},{'user_id':'rob'});
-            /////////////////////////////////////////////////////////////
-
-            // // initialize the channel 
-            // const channel = client.channel('messaging', 'awesome-chat'); 
-            
-            // // accept the invite 
-            // await channel.acceptInvite({ 
-            //     message: { text: 'Nick joined this channel!' }, 
-            // }); 
-            
-            // // accept the invite server side  
-            // await channel.acceptInvite({'user_id':'nick'});
-
-            // //rejecting invites
-            // await channel.rejectInvite(); 
- 
-            // //server side  
-            // await channel.rejectInvite({'user_id':'rob'});
-
-
-            //reset fields
-            // setChannelName('');
-            // setSelectedUsers([client.userID ])
-            // setActiveChannel(newChannel)
 
         } catch (error) {
             console.log("error", error)
@@ -148,6 +98,7 @@ const EditChannel = ({setIsEditing, excludeChannelMembers, isEditing}) => {
             setErrMsg(error.message)
             setHasError(true)
         }
+        isEditing && setIsEditing(prevState => !prevState)
 
     };
 

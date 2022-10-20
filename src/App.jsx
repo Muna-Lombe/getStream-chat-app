@@ -54,7 +54,7 @@ const App = () => {
     useEffect(() => {
         // Handler to call on window resize
         function handleResize() {
-            setIsMobile((window.innerWidth <= 960))
+            setIsMobile((window.innerWidth <= 720))
         }
         // Add event listener
         window.addEventListener("resize", handleResize);
@@ -85,6 +85,7 @@ const App = () => {
                     isCreating={isCreating}
                     setIsCreating={setIsCreating}
                     setCreateType={setCreateType}
+                    isEditing={isEditing}
                     setIsEditing={setIsEditing}
                     setShowInfo={setShowInfo}
                     setToggleDark={setToggleDark}

@@ -59,7 +59,7 @@ const CreateChannel = ({createType, isCreating, setIsCreating, setToggleContaine
             if(createType === "messaging"){
                 let chat = client.getChannelByMembers('messaging', { members: [client.userID, selectedUsers[1]] });
                 await chat.create();
-                setToggleContainer(prevState => !prevState)
+                
             }
             if( createType === "team"){
                 const newChannel = client.channel(
@@ -123,7 +123,7 @@ const CreateChannel = ({createType, isCreating, setIsCreating, setToggleContaine
             
             
         }
-
+        setToggleContainer(prevState => !prevState)
     };
     
     const CreateChannelHeader = ()=>(

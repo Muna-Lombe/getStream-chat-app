@@ -26,7 +26,7 @@ const initialState = {
 };
 
 // FOR PROD---
-// let URL = "http://localhost:5000/auth";
+let url = "https://getstream-chat-server-2.onrender.com/auth"//"http://localhost:5000/auth";
 
 
 
@@ -38,47 +38,51 @@ if(g("URL")){
 
 // REMOVE BEFORE DEPLOY --ONLY FOR DEV --TESTING MOBILE
 s("URL", "http://localhost:5000")
-let url =()=> { return g("URL")+"/auth"};
+// let url =()=> { return g("URL")+"/auth"};
 
 export const dc = (en) => {
-    const n = en.hash.toString().slice(en.hash.length - 4, en.hash.length).split("#")
-    const ex = en.hash.slice(Number.parseInt(n[0]), (Number.parseInt(n[0]) + Number.parseInt(n[1])))
-    // console.log("dehashed:",ex)
-    return ex;
+    if(en.hash.length < 5) return en.hash;
+    const h = en.hash
+    const [f, l] = [h.toString().indexOf("!"), h.length];
+    const c = h.slice(l-2)
+    const j = Number.parseInt(h.at(f + 1) + h.at(f + 2))
+    const p = c-j
+    const k = h.slice(p,c )
+    console.log("dehashed:",k)
+    return k;
 }
 
 export const FA = async () => {
 // REMOVE BEFORE DEPLOY --ONLY FOR DEV --TESTING MOBILE
-// const { data: res } = await axios.get(`${URL}/fetchauthor`)
-//         console.log("res", res)
-//         cookies.set('atlas', res);
-//         s('atlas', res.hash)
-
-//         return dc(res)
-
-    try {
-        
-        const { data: res } = await axios.get(`${url()}/fetchauthor`)
+const { data: res } = await axios.get(`${url}/fetchauthor`)
         console.log("res", res)
         cookies.set('atlas', res);
         s('atlas', res.hash)
-
         return dc(res)
-    } catch (error) {
-        console.log(error)
-        if(error.message.toString().toLowerCase().includes("network error")){
-            console.log("is net err")
-            setTimeout(() => {
-                FA()
-            }, 3000);
-            return 0
-        }
-        let get  = require('../assets/logs')
-        console.log("failed to fetch at localhost:5000, retrying with ", get["newUrl"].path)
-        let newURL = "http://"+get["newUrl"].path;
-        s('URL', newURL)
-        FA();
-    }
+
+    // try {
+        
+    //     const { data: res } = await axios.get(`${url}/fetchauthor`)
+    //     console.log("res", res)
+    //     cookies.set('atlas', res);
+    //     s('atlas', res.hash)
+
+    //     return dc(res)
+    // } catch (error) {
+    //     console.log(error)
+    //     if(error.message.toString().toLowerCase().includes("network error")){
+    //         console.log("is net err")
+    //         setTimeout(() => {
+    //             FA()
+    //         }, 3000);
+    //         return 0
+    //     }
+    //     let get  = require('../assets/logs')
+    //     console.log("failed to fetch at localhost:5000, retrying with ", get["newUrl"].path)
+    //     let newURL = "http://"+get["newUrl"].path;
+    //     s('URL', newURL)
+    //     FA();
+    // }
 }
 
 FA().then(res => res);
@@ -99,7 +103,7 @@ const Auth =  () => {
         const { username, password, phoneNumber, avatarUrl} = form;
         
 
-        const res = await axios.post(`${url()}/${isSignup ? 'signup' : 'login'}`, {fullName: form.fullName, username, password, phoneNumber, avatarUrl})
+        const res = await axios.post(`${url}/${isSignup ? 'signup' : 'login'}`, {fullName: form.fullName, username, password, phoneNumber, avatarUrl})
         .then((result) => {
             console.log("res", result)
             return result.data
@@ -118,7 +122,7 @@ const Auth =  () => {
         }
         if (res.token) {
             console.log("success")
-            const { token, userId, hashedPassword, fullName, permissions, grants, api_key = FA().then(r => r) } = res
+            const { token, userId, hashedPassword, fullName, permissions, grants= FA().then(r => r) } = res
             //COMMENT THIS SECTION OUT TO TEST LASTER//
             cookies.set('token', token);
             cookies.set('userId', userId);

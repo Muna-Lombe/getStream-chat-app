@@ -16,7 +16,7 @@ const cookies = new Cookies();
 const Sidebar = ({setToggleContainer, logout, isMobile, children, setToggleDark}) => (
     <div className={"channel-list__sidebar"+(isMobile ? "__mobile" : "")}>
         
-        <HospitalIcon onClick={() => setToggleContainer(prevState => !prevState)} size={isMobile ? {w:32,h:32}: false}/>
+        <HospitalIcon size={isMobile ? {w:32,h:32}: false}/>
         <LogoutIcon onClick={logout} size={isMobile ? {w:32,h:32}: false}/>
 
         {
@@ -24,11 +24,6 @@ const Sidebar = ({setToggleContainer, logout, isMobile, children, setToggleDark}
             &&
             children
         }
-        {/* <div className="channel-list__sidebar__icon3">
-            <div className="icon1__inner" onClick={logout}>
-                Chat
-            </div>
-        </div> */}
     </div>
 );
 
@@ -218,7 +213,7 @@ const ChannelListContent = ({ isCreating, setIsCreating, setCreateType, setIsEdi
     );
 }
 
-const ChannelListContainer = ({ setCreateType, setIsCreating, setIsEditing, setToggleDark, toggleContainer, setToggleContainer, isMobile}) => {
+const ChannelListContainer = ({ setCreateType, isCreating, setIsCreating, isEditing,setIsEditing, setToggleDark, toggleContainer, setToggleContainer, isMobile}) => {
     // Empty array ensures that effect is only run on mount
     
     
@@ -228,7 +223,7 @@ const ChannelListContainer = ({ setCreateType, setIsCreating, setIsEditing, setT
                 isMobile ?
                 (
                     <div className="channel-list__container-responsive" 
-                            style={{ left: toggleContainer ? "0%" : "-100%" }}
+                            style={{ left: (toggleContainer && (!isCreating || !isEditing)) ? "0%":"-100%"   }}
                             // style={{left: "0%", backgroundColor: "#005fff"}}
                     >
                         {/* <div className="channel-list__container-toggle" onClick={() => setToggleContainer((prevToggleContainer) => !prevToggleContainer)} /> */}
@@ -245,7 +240,9 @@ const ChannelListContainer = ({ setCreateType, setIsCreating, setIsEditing, setT
                                 setToggleDark={setToggleDark}
                             />
                         </div>
-                        
+                        <div className="channel-list__container-responsive__clickable-space" onClick={() => (toggleContainer ? setToggleContainer(false): "")}>
+                            
+                        </div>
                     </div>
                 )
                 : (
