@@ -25,20 +25,9 @@ const initialState = {
     avatarUrl:""
 };
 
-// FOR PROD---
-let url = "https://getstream-chat-server-2.onrender.com/auth"//"http://localhost:5000/auth";
+// PROD url---
+let url = "https://getstream-chat-server-2.onrender.com/auth";
 
-
-
-// REMOVE BEFORE DEPLOY --ONLY FOR DEV --TESTING MOBILE
-// remove url from storage
-if(g("URL")){
-    sessionStorage.removeItem('URL')
-}
-
-// REMOVE BEFORE DEPLOY --ONLY FOR DEV --TESTING MOBILE
-s("URL", "http://localhost:5000")
-// let url =()=> { return g("URL")+"/auth"};
 
 export const dc = (en) => {
     if(en.hash.length < 5) return en.hash;
