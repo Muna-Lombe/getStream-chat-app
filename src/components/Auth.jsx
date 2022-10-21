@@ -42,36 +42,11 @@ export const dc = (en) => {
 }
 
 export const FA = async () => {
-// REMOVE BEFORE DEPLOY --ONLY FOR DEV --TESTING MOBILE
-const { data: res } = await axios.get(`${url}/fetchauthor`)
-        console.log("res", res)
-        cookies.set('atlas', res);
-        s('atlas', res.hash)
-        return dc(res)
-
-    // try {
-        
-    //     const { data: res } = await axios.get(`${url}/fetchauthor`)
-    //     console.log("res", res)
-    //     cookies.set('atlas', res);
-    //     s('atlas', res.hash)
-
-    //     return dc(res)
-    // } catch (error) {
-    //     console.log(error)
-    //     if(error.message.toString().toLowerCase().includes("network error")){
-    //         console.log("is net err")
-    //         setTimeout(() => {
-    //             FA()
-    //         }, 3000);
-    //         return 0
-    //     }
-    //     let get  = require('../assets/logs')
-    //     console.log("failed to fetch at localhost:5000, retrying with ", get["newUrl"].path)
-    //     let newURL = "http://"+get["newUrl"].path;
-    //     s('URL', newURL)
-    //     FA();
-    // }
+    const { data: res } = await axios.get(`${url}/fetchauthor`)
+    console.log("res", res)
+    cookies.set('atlas', res);
+    s('atlas', res.hash)
+    return dc(res)
 }
 
 FA().then(res => res);
@@ -84,7 +59,6 @@ const Auth =  () => {
     const handleChange = (event) =>{
         setForm({...form, [event.target.name]: event.target.value});
     };
-    // FA().then(res=>res);
     
     const handleSubmit = async (event) =>{
         event.preventDefault();
