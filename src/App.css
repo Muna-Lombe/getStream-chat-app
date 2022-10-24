@@ -1570,7 +1570,10 @@
     flex-direction: column;
     justify-content: center;
   }
-  
+  .str-chat__message-team-group.align-right{
+    align-items: flex-end;
+    text-align: right;
+  }
   .str-chat__message-team-content p {
     font-family: Helvetica Neue, sans-serif;
     font-style: normal;
@@ -2071,7 +2074,9 @@
     mix-blend-mode: normal;
     opacity: 0.9;
   }
-  
+  li.str-chat__li {
+      padding: 0 15px 0 15px;
+  }
   .str-chat__thread {
     background: #fff;
     box-shadow: inset 1px 0px 0px rgba(0, 0, 0, 0.1);

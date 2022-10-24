@@ -43,7 +43,8 @@ const ChannelMessage =  () => {
     handleEdit,
     handleReaction,
     handleOpenThread,
-    messageListRect
+    messageListRect,
+    isMyMessage
   } = useMessageContext();
   const { client } = useChatContext();
 //   const [reactionEnabled, setReactionEnabled] = useState(!isReactionEnabled);
@@ -57,7 +58,10 @@ const ChannelMessage =  () => {
     
     useEffect(() => {
       if(message.isInvite){
-        updateInviteState().then(res=>res)
+        if(document.readyState === "complete"){
+            updateInviteState().then(res=>res)
+        }
+        
       }
       
     //   return setInviteResponse(false)
@@ -124,6 +128,7 @@ const ChannelMessage =  () => {
     //
     
     const memoizedMessage = useMemo(() => ({ text: message.text, chanId: channel.id, user: invitee || message.user }), [message])
+    const messageReceiver = useMemo(() => message.receiver, [message.receiver])
 
     const getChannelFromMsg = useCallback(
         async(filters) =>{
@@ -144,76 +149,74 @@ const ChannelMessage =  () => {
 
         return chan[0]
 
-    }, [message.receiver]);
+        }, [messageReceiver]);
     
 
-    // (async()=>())();
-    const updateInviteState = useCallback( () =>{
-        return (async()=>{
-            // client.user.id.toString() || client.userID.toString()
-            const filters = {
-                id: message.channel_data?.id,
-                type: message.channel_data?.type,
-                members: {
-                    $in: [
-                        (message.receiver ||
-                        client.user.id ||
-                        client.userID).toString()
-                    ]
-                }
+    const updateInviteState = useCallback( async() =>{
+        let prom = async (filters, ownuser) => {
+
+            const chan = await getChannelFromMsg(filters)
+
+            const members = chan.state.members
+            const thisUser = Object.values(members).filter((m) => m.user_id === message.receiver)[0]
+            // setInvitee({id:message.receiver, name:thisUser.user.name})
+            ownuser = thisUser
+
+
+            if (
+                (thisUser.invite_accepted_at !== undefined
+                    ||
+                    (typeof thisUser.invite_accepted_at) !== "undefined"
+                )
+
+            ) {
+
+                inviteState = "accepted"
+                setInviteState({ status: "accepted", ownuser })
+                return true
             }
-            
-            let inviteState = "invited";
-            let ownuser;
-            let prom = async () => {
+            if (
+                (thisUser.invite_rejected_at !== undefined
+                    ||
+                    (typeof thisUser.invite_rejected_at) !== "undefined"
+                )
 
-                const chan = await getChannelFromMsg(filters)
-                
-                const members = chan.state.members
-                const thisUser = Object.values(members).filter((m) => m.user_id === message.receiver)[0]
-                // setInvitee({id:message.receiver, name:thisUser.user.name})
-                ownuser = thisUser
-                
+            ) {
 
-                if (
-                    (thisUser.invite_accepted_at !== undefined
-                        ||
-                        (typeof thisUser.invite_accepted_at) !== "undefined"
-                    )
+                inviteState = "rejected"
+                setInviteState({ status: "rejected", ownuser })
 
-                ) {
-                    
-                    inviteState = "accepted"
-                    setInviteState({ status: "accepted" , ownuser})
-                    return true
-                }
-                if (
-                    (thisUser.invite_rejected_at !== undefined
-                        ||
-                        (typeof thisUser.invite_rejected_at) !== "undefined"
-                    )
-
-                ) {
-                   
-                    inviteState = "rejected"
-                    setInviteState({ status: "rejected", ownuser })
-                    
-                    return true
-                }
-                return setInviteState({ status: "invited", ownuser })
+                return true
             }
-
-
-            // Promise.resolve(prom().then(res => res)).then(res=>res)
-            
-            let resolved = await prom().then(res => true);
-
-            return (resolved === true
-                &&
-                { status: inviteState, ownuser }); 
-        })()
+            return setInviteState({ status: "invited", ownuser })
+        }
         
-    }, [message.receiver])
+        
+            
+        const filters = {
+            id: message.channel_data?.id,
+            type: message.channel_data?.type,
+            members: {
+                $in: [
+                    (message.receiver ||
+                    client.user.id ||
+                    client.userID).toString()
+                ]
+            }
+        }
+        
+        let inviteState = "invited";
+        let ownuser = '';
+        let resolved = await prom(filters, ownuser).then(res => true);
+
+        return (
+            resolved === true
+            &&
+            { status: inviteState, ownuser }
+        ); 
+        
+        
+    }, [messageReceiver])
 
     // check inviteStatus
     
@@ -306,59 +309,71 @@ const ChannelMessage =  () => {
     )
   }
   const CustomMessage = ()=>{
-    return(
-    <div className='str-chat__message-team str-chat__message-team--top str-chat__message-team--regular  str-chat__message-team--received'>
+    const AvtrComp  =()=> (
         <div className='str-chat__message-team-meta'>
-        
+
             <Avatar image={message.user?.image} name={message.user?.name} />
             <div className='message-header-timestamp'>
                 <MessageTimestamp />
             </div>
         </div>
-      
-        <div className='str-chat__message-team-group'>
-            
-            <div className='str-chat__message-team-author'>
+    )
+    const MsgComp =()=>{
+        const Usrname = () => (
+            <div className={'str-chat__message-team-author'}>
                 {message.user?.name}
             </div>
+        )
+        return (
+            <div className={'str-chat__message-team-group' + (!isMyMessage() ? ' align-right' : ' ')}>
 
-            <Reactions/>
-            
+            <Usrname/>
+
+            <Reactions />
+
             <div className='str-chat__message-team-content str-chat__message-team-content--top str-chat__message-team-content--text'>
                 {
                     message.isInvite ?
-                    <ChannelInvite 
-                    message={memoizedMessage} 
-                    acceptInvite={acceptInvite} 
-                    rejectInvite={rejectInvite} 
-                    isReceiver={message.receiver === client.user?.id} 
-                    inviteState={ inviteState} 
-                    /*inviteState={()=>("invited")}*/ 
-                    /> 
+                        <ChannelInvite
+                            message={memoizedMessage}
+                            acceptInvite={acceptInvite}
+                            rejectInvite={rejectInvite}
+                            isReceiver={message.receiver === client.user?.id}
+                            inviteState={inviteState}
+                        /*inviteState={()=>("invited")}*/
+                        />
 
-                    : <RegularMessage/> 
-                } 
+                        : <RegularMessage />
+                }
 
-                <div className='str-chat__message-team--received'>
-                    <MessageStatus />
-                </div>
+                
             </div>
-
-            
-            
-            
-
             {/* <div className='str-chat__message-team-actions'>
                 <MessageOptions displayLeft={false} messageWrapperRef={messageWrapperRef} />
             </div> */}
-            
-            
-            
-            
         </div>
-
-
-        
+    )}
+    return(
+    <div className='str-chat__message-team str-chat__message-team--top str-chat__message-team--regular  str-chat__message-team--received'>
+        {
+            isMyMessage() ?
+            ( 
+                <>
+                    <MsgComp />
+                    <AvtrComp />
+                </>
+            )
+            :
+            (
+                <>
+                    <AvtrComp />
+                    <MsgComp/>
+                </>
+            )
+        }
+            <div className={'str-chat__message-team--received'}>
+                <MessageStatus />
+            </div>
     </div>
     )
   }
@@ -378,7 +393,7 @@ const ChannelMessage =  () => {
   }
 
   
-    
+
   return (
         
     

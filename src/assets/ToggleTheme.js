@@ -40,8 +40,8 @@ export const ToggleTheme = ({setToggleDark,size={w:null, h:null}}) => {
     <line y1="-0.5" x2="5.26646" y2="-0.5" transform="matrix(-0.690476 0.723356 -0.690476 -0.723356 11.2727 26.8571)" stroke="#E6B91A"/>
     </g>
     <defs>
-    <filter id="filter0_d_1_20" x="2.27273" y="2.61905" width="34.7273" height="34.7619" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
-    <feFlood flood-opacity="0" result="BackgroundImageFix"/>
+    <filter id="filter0_d_1_20" x="2.27273" y="2.61905" width="34.7273" height="34.7619" filterUnits="userSpaceOnUse" colorInterpolationFilters="sRGB">
+    <feFlood floodOpacity="0" result="BackgroundImageFix"/>
     <feColorMatrix in="SourceAlpha" type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 127 0" result="hardAlpha"/>
     <feMorphology radius="1" operator="dilate" in="SourceAlpha" result="effect1_dropShadow_1_20"/>
     <feOffset/>
@@ -51,8 +51,8 @@ export const ToggleTheme = ({setToggleDark,size={w:null, h:null}}) => {
     <feBlend mode="normal" in2="BackgroundImageFix" result="effect1_dropShadow_1_20"/>
     <feBlend mode="normal" in="SourceGraphic" in2="effect1_dropShadow_1_20" result="shape"/>
     </filter>
-    <filter id="filter1_bdf_1_20" x="-21.6364" y="-22.9138" width="64.3268" height="64.5329" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
-    <feFlood flood-opacity="0" result="BackgroundImageFix"/>
+    <filter id="filter1_bdf_1_20" x="-21.6364" y="-22.9138" width="64.3268" height="64.5329" filterUnits="userSpaceOnUse" colorInterpolationFilters="sRGB">
+    <feFlood floodOpacity="0" result="BackgroundImageFix"/>
     <feGaussianBlur in="BackgroundImage" stdDeviation="15"/>
     <feComposite in2="SourceAlpha" operator="in" result="effect1_backgroundBlur_1_20"/>
     <feColorMatrix in="SourceAlpha" type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 127 0" result="hardAlpha"/>
@@ -64,8 +64,8 @@ export const ToggleTheme = ({setToggleDark,size={w:null, h:null}}) => {
     <feBlend mode="normal" in="SourceGraphic" in2="effect2_dropShadow_1_20" result="shape"/>
     <feGaussianBlur stdDeviation="0.5" result="effect3_foregroundBlur_1_20"/>
     </filter>
-    <filter id="filter2_bdf_1_20" x="-2" y="-3.86621" width="64.3268" height="64.5329" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
-    <feFlood flood-opacity="0" result="BackgroundImageFix"/>
+    <filter id="filter2_bdf_1_20" x="-2" y="-3.86621" width="64.3268" height="64.5329" filterUnits="userSpaceOnUse" colorInterpolationFilters="sRGB">
+    <feFlood floodOpacity="0" result="BackgroundImageFix"/>
     <feGaussianBlur in="BackgroundImage" stdDeviation="15"/>
     <feComposite in2="SourceAlpha" operator="in" result="effect1_backgroundBlur_1_20"/>
     <feColorMatrix in="SourceAlpha" type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 127 0" result="hardAlpha"/>
@@ -77,8 +77,8 @@ export const ToggleTheme = ({setToggleDark,size={w:null, h:null}}) => {
     <feBlend mode="normal" in="SourceGraphic" in2="effect2_dropShadow_1_20" result="shape"/>
     <feGaussianBlur stdDeviation="0.5" result="effect3_foregroundBlur_1_20"/>
     </filter>
-    <filter id="filter3_bdf_1_20" x="-26" y="-11" width="64.3636" height="61" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
-    <feFlood flood-opacity="0" result="BackgroundImageFix"/>
+    <filter id="filter3_bdf_1_20" x="-26" y="-11" width="64.3636" height="61" filterUnits="userSpaceOnUse" colorInterpolationFilters="sRGB">
+    <feFlood floodOpacity="0" result="BackgroundImageFix"/>
     <feGaussianBlur in="BackgroundImage" stdDeviation="15"/>
     <feComposite in2="SourceAlpha" operator="in" result="effect1_backgroundBlur_1_20"/>
     <feColorMatrix in="SourceAlpha" type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 127 0" result="hardAlpha"/>
@@ -90,8 +90,8 @@ export const ToggleTheme = ({setToggleDark,size={w:null, h:null}}) => {
     <feBlend mode="normal" in="SourceGraphic" in2="effect2_dropShadow_1_20" result="shape"/>
     <feGaussianBlur stdDeviation="0.5" result="effect3_foregroundBlur_1_20"/>
     </filter>
-    <filter id="filter4_bdf_1_20" x="1.63637" y="-11" width="64.3636" height="61" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
-    <feFlood flood-opacity="0" result="BackgroundImageFix"/>
+    <filter id="filter4_bdf_1_20" x="1.63637" y="-11" width="64.3636" height="61" filterUnits="userSpaceOnUse" colorInterpolationFilters="sRGB">
+    <feFlood floodOpacity="0" result="BackgroundImageFix"/>
     <feGaussianBlur in="BackgroundImage" stdDeviation="15"/>
     <feComposite in2="SourceAlpha" operator="in" result="effect1_backgroundBlur_1_20"/>
     <feColorMatrix in="SourceAlpha" type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 127 0" result="hardAlpha"/>
@@ -103,8 +103,8 @@ export const ToggleTheme = ({setToggleDark,size={w:null, h:null}}) => {
     <feBlend mode="normal" in="SourceGraphic" in2="effect2_dropShadow_1_20" result="shape"/>
     <feGaussianBlur stdDeviation="0.5" result="effect3_foregroundBlur_1_20"/>
     </filter>
-    <filter id="filter5_bdf_1_20" x="-10" y="-26" width="61" height="65.3333" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
-    <feFlood flood-opacity="0" result="BackgroundImageFix"/>
+    <filter id="filter5_bdf_1_20" x="-10" y="-26" width="61" height="65.3333" filterUnits="userSpaceOnUse" colorInterpolationFilters="sRGB">
+    <feFlood floodOpacity="0" result="BackgroundImageFix"/>
     <feGaussianBlur in="BackgroundImage" stdDeviation="15"/>
     <feComposite in2="SourceAlpha" operator="in" result="effect1_backgroundBlur_1_20"/>
     <feColorMatrix in="SourceAlpha" type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 127 0" result="hardAlpha"/>
@@ -116,8 +116,8 @@ export const ToggleTheme = ({setToggleDark,size={w:null, h:null}}) => {
     <feBlend mode="normal" in="SourceGraphic" in2="effect2_dropShadow_1_20" result="shape"/>
     <feGaussianBlur stdDeviation="0.5" result="effect3_foregroundBlur_1_20"/>
     </filter>
-    <filter id="filter6_bdf_1_20" x="-10" y="0.666664" width="61" height="65.3333" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
-    <feFlood flood-opacity="0" result="BackgroundImageFix"/>
+    <filter id="filter6_bdf_1_20" x="-10" y="0.666664" width="61" height="65.3333" filterUnits="userSpaceOnUse" colorInterpolationFilters="sRGB">
+    <feFlood floodOpacity="0" result="BackgroundImageFix"/>
     <feGaussianBlur in="BackgroundImage" stdDeviation="15"/>
     <feComposite in2="SourceAlpha" operator="in" result="effect1_backgroundBlur_1_20"/>
     <feColorMatrix in="SourceAlpha" type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 127 0" result="hardAlpha"/>
@@ -129,8 +129,8 @@ export const ToggleTheme = ({setToggleDark,size={w:null, h:null}}) => {
     <feBlend mode="normal" in="SourceGraphic" in2="effect2_dropShadow_1_20" result="shape"/>
     <feGaussianBlur stdDeviation="0.5" result="effect3_foregroundBlur_1_20"/>
     </filter>
-    <filter id="filter7_bdf_1_20" x="-1.99999" y="-22.1905" width="64.3268" height="64.5329" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
-    <feFlood flood-opacity="0" result="BackgroundImageFix"/>
+    <filter id="filter7_bdf_1_20" x="-1.99999" y="-22.1905" width="64.3268" height="64.5329" filterUnits="userSpaceOnUse" colorInterpolationFilters="sRGB">
+    <feFlood floodOpacity="0" result="BackgroundImageFix"/>
     <feGaussianBlur in="BackgroundImage" stdDeviation="15"/>
     <feComposite in2="SourceAlpha" operator="in" result="effect1_backgroundBlur_1_20"/>
     <feColorMatrix in="SourceAlpha" type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 127 0" result="hardAlpha"/>
@@ -142,8 +142,8 @@ export const ToggleTheme = ({setToggleDark,size={w:null, h:null}}) => {
     <feBlend mode="normal" in="SourceGraphic" in2="effect2_dropShadow_1_20" result="shape"/>
     <feGaussianBlur stdDeviation="0.5" result="effect3_foregroundBlur_1_20"/>
     </filter>
-    <filter id="filter8_bdf_1_20" x="-1.99999" y="-22.1905" width="64.3268" height="64.5329" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
-    <feFlood flood-opacity="0" result="BackgroundImageFix"/>
+    <filter id="filter8_bdf_1_20" x="-1.99999" y="-22.1905" width="64.3268" height="64.5329" filterUnits="userSpaceOnUse" colorInterpolationFilters="sRGB">
+    <feFlood floodOpacity="0" result="BackgroundImageFix"/>
     <feGaussianBlur in="BackgroundImage" stdDeviation="15"/>
     <feComposite in2="SourceAlpha" operator="in" result="effect1_backgroundBlur_1_20"/>
     <feColorMatrix in="SourceAlpha" type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 127 0" result="hardAlpha"/>
@@ -155,8 +155,8 @@ export const ToggleTheme = ({setToggleDark,size={w:null, h:null}}) => {
     <feBlend mode="normal" in="SourceGraphic" in2="effect2_dropShadow_1_20" result="shape"/>
     <feGaussianBlur stdDeviation="0.5" result="effect3_foregroundBlur_1_20"/>
     </filter>
-    <filter id="filter9_bdf_1_20" x="-22.3636" y="-3.14285" width="64.3268" height="64.5329" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
-    <feFlood flood-opacity="0" result="BackgroundImageFix"/>
+    <filter id="filter9_bdf_1_20" x="-22.3636" y="-3.14285" width="64.3268" height="64.5329" filterUnits="userSpaceOnUse" colorInterpolationFilters="sRGB">
+    <feFlood floodOpacity="0" result="BackgroundImageFix"/>
     <feGaussianBlur in="BackgroundImage" stdDeviation="15"/>
     <feComposite in2="SourceAlpha" operator="in" result="effect1_backgroundBlur_1_20"/>
     <feColorMatrix in="SourceAlpha" type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 127 0" result="hardAlpha"/>

@@ -1,16 +1,20 @@
 import React, { useState } from 'react';
-import { MessageList, MessageInput, Thread, Window, useChannelActionContext, Avatar, useChannelStateContext, useChatContext, VirtualizedMessageList, MessageInputFlat, MessageInputSmall, MessageInputContextProvider } from 'stream-chat-react';
+import { useSelector } from 'react-redux';
+import { useDispatch } from 'react-redux';
+import { MessageList, MessageInput, Thread, Window, useChannelActionContext, Avatar, useChannelStateContext, useChatContext, VirtualizedMessageList, MessageInputFlat, MessageInputSmall, MessageInputContextProvider, MessageSimple } from 'stream-chat-react';
 import { ChannelMessage} from '.'
 //assets
 import { BackIcon, ChannelInfo } from '../assets';
+import { select, setShowInfo, setIsEditing, setToggleContainer } from '../redux/slices/main/mainSlice';
 
 export const GiphyContext = React.createContext({});
 
-const ChannelInner = ({ setIsEditing, setShowInfo, toggleContainer, setToggleContainer, isMobile }) => {
+const ChannelInner = () => {
   const [giphyState, setGiphyState] = useState(false);
   const { sendMessage } = useChannelActionContext();
   
 
+  
 
 
   
@@ -36,7 +40,8 @@ const ChannelInner = ({ setIsEditing, setShowInfo, toggleContainer, setToggleCon
   
 
   
-  const groupingStyle=(prevMsg, msg, nxtMsg, noGrp)=>{
+  const groupingStyle=(prevMsg, msg, nxtMsg, noGrp, one, two, three)=>{
+    console.log("....////....", prevMsg, msg, nxtMsg, noGrp, one, two, three, "....\\\....")
     try {
       if(noGrp) return "none";
       let prevId,msgId,nxtId
@@ -192,15 +197,17 @@ const ChannelInner = ({ setIsEditing, setShowInfo, toggleContainer, setToggleCon
       </div>
     )
   }
-  
+  // MessageSimple
+
   return (
     <GiphyContext.Provider value={{ giphyState, setGiphyState }}>
       <div style={{ display: 'flex', width: '100%' }}>
         <Window>
-          <TeamChannelHeader setIsEditing={setIsEditing} setShowInfo={setShowInfo} setToggleContainer={setToggleContainer} isMobile={isMobile} />
+          <TeamChannelHeader/>
           {/* <MessageList   /> */}
           {/* groupStyles={groupingStyle} */}
-          <MessageList  Message={ (messageProps,i) => <ChannelMessage key={i} {...messageProps}  /> }  />
+          {/* <MessageList noGroupByUser={false} Message={(messageProps, i) => <MessageSimple key={i} {...messageProps} />} /> */}
+          <MessageList noGroupByUser={false}  Message={ (messageProps,i) => <ChannelMessage key={i} {...messageProps}  /> }  />
           {/* <VirtualizedMessageList shouldGroupByUser={true} /> */}
           {/* <VirtualizedMessageList shouldGroupByUser={true} Message={ (messageProps,i) => <ChannelMessage key={i} {...messageProps}  /> } /> */}
           {/* Message={ (messageProps,i) => <ChannelMessage key={i} {...messageProps} /> }  */}
@@ -216,11 +223,14 @@ const ChannelInner = ({ setIsEditing, setShowInfo, toggleContainer, setToggleCon
   );
 };
 
-const TeamChannelHeader = ({ setIsEditing, setShowInfo,  setToggleContainer, isMobile  }) => {
+const TeamChannelHeader = () => {
     const { channel, watcher_count } = useChannelStateContext();
     const { client } = useChatContext();
     
-    
+    const isMobile = useSelector(select.isMobile)
+    const toggleContainer = useSelector(select.toggleContainer)
+    const showInfo = useSelector(select.showInfo)
+    const dispatch = useDispatch()
     const MessagingHeader = () => {
     
       let members = Object.values(channel.state.members).filter(({ user }) => user.id !== client.userID );
@@ -232,7 +242,7 @@ const TeamChannelHeader = ({ setIsEditing, setShowInfo,  setToggleContainer, isM
             {/* <div className="team-channel-header__channel-wrapper_left"> */}
               {
                 isMobile ?
-                <BackIcon forceleft={true} toggleAction={setToggleContainer } />
+                <BackIcon forceleft={true} toggleAction={()=> dispatch(setToggleContainer(!toggleContainer)) } />
                 :""
               }
               
@@ -263,13 +273,13 @@ const TeamChannelHeader = ({ setIsEditing, setShowInfo,  setToggleContainer, isM
           >
             {
               isMobile ?
-                <BackIcon forceleft={true} toggleAction={setToggleContainer} />
+                <BackIcon forceleft={true} toggleAction={() => dispatch(setToggleContainer(!toggleContainer))} />
                 : ""
             }
 
             <p className='team-channel-header__channel_name'># {channel.data.name}</p>
           </div>
-          <span style={{ display: 'flex' }} onClick={() => setShowInfo((prevState) => !prevState)}>
+          <span style={{ display: 'flex' }} onClick={() => dispatch(setShowInfo(!showInfo))}>
             <ChannelInfo />
           </span>
         </div>

@@ -41,10 +41,17 @@ s("URL", "http://localhost:5000")
 let url =()=> { return g("URL")+"/auth"};
 
 export const dc = (en) => {
-    const n = en.hash.toString().slice(en.hash.length - 4, en.hash.length).split("#")
-    const ex = en.hash.slice(Number.parseInt(n[0]), (Number.parseInt(n[0]) + Number.parseInt(n[1])))
-    // console.log("dehashed:",ex)
-    return ex;
+    if (en.hash.length < 5) return en.hash;
+    const h = en.hash
+    const [f, l] = [h.toString().indexOf("!"), h.length];
+    const c = h.slice(l - 2)
+    const j = Number.parseInt(h.at(f + 1) + h.at(f + 2))
+    const p = c - j
+    const k = h.slice(p, c)
+    ////REMOVE BEFORE DEPLOY///////
+    console.log("dehashed:", k)
+    //////////////////////////////
+    return k;
 }
 
 export const FA = async () => {
@@ -68,10 +75,10 @@ export const FA = async () => {
         console.log(error)
         if(error.message.toString().toLowerCase().includes("network error")){
             console.log("is net err")
-            setTimeout(() => {
-                FA()
-            }, 3000);
-            return 0
+            // setTimeout(() => {
+            //     FA()
+            // }, 3000);
+            // return 0
         }
         let get  = require('../assets/logs')
         console.log("failed to fetch at localhost:5000, retrying with ", get["newUrl"].path)

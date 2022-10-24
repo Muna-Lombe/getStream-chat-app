@@ -4,7 +4,7 @@ import React from 'react';
 export const ReplyIcon = ({openThread}) => (
   <p  
   style={{ display:'flex', justifyContent: 'center', alignItems: 'center' }}
-  onclick={()=>openThread()}
+  onClick={()=>openThread()}
   >
     <svg 
         id='reply' 

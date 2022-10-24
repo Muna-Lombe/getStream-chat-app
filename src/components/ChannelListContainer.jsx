@@ -1,15 +1,15 @@
 import React, {useMemo, useState} from 'react'
 import { useEffect } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 import { ChannelList, darkModeTheme, useChatContext} from 'stream-chat-react';
-import Cookies from 'universal-cookie/es6';
-
 import { ChannelSearch, TeamChannelList, TeamChannelPreview, UserInfo} from '.';
 import { HospitalIcon, LogoutIcon } from '../assets';
 
 import { ToggleTheme } from '../assets/ToggleTheme';
+import { select, setCreateType, setIsCreating, setIsEditing, setToggleContainer, setToggleDark } from '../redux/slices/main/mainSlice';
 
 
-const cookies = new Cookies();
+
 
 
 
@@ -17,7 +17,7 @@ const Sidebar = ({setToggleContainer, logout, isMobile, children, setToggleDark}
     <div className={"channel-list__sidebar"+(isMobile ? "__mobile" : "")}>
         
         <HospitalIcon onClick={() => setToggleContainer(prevState => !prevState)} size={isMobile ? {w:32,h:32}: false}/>
-        <LogoutIcon onClick={logout} size={isMobile ? {w:32,h:32}: false}/>
+        <LogoutIcon size={isMobile ? {w:32,h:32}: false}/>
 
         {
             isMobile
@@ -59,14 +59,10 @@ const customChannelMessagingFilter=(channels) => {
 }
 
                             
-const ChannelListContent = ({ isCreating, setIsCreating, setCreateType, setIsEditing, setToggleContainer, setShowInfo, isMobile, setToggleDark }) => {
+const ChannelListContent = ({isMobile}) => {
     const { client } = useChatContext();
 
-    const logout = () =>{
-        const allCookies = Object.keys(cookies.getAll());
-        allCookies.map((cookie)=> cookies.remove(`${cookie}`))
-        window.location.reload();
-    };
+   
 
     const filters = { members: {$in: [client.userID]}, joined: {$eq: true} }
     if(isMobile){
@@ -79,7 +75,7 @@ const ChannelListContent = ({ isCreating, setIsCreating, setCreateType, setIsEdi
         )
         return(
             <>
-                <Sidebar setToggleContainer={setToggleContainer} setToggleDark={setToggleDark} logout={logout} children={children} isMobile={isMobile} />
+                <Sidebar setToggleContainer={setToggleContainer} setToggleDark={setToggleDark} children={children} isMobile={isMobile} />
                 <div className={"channel-list__list__wrapper"}>
                     <div style={{ width: '100%' }}>
                         <CompanyHeader />
@@ -92,22 +88,12 @@ const ChannelListContent = ({ isCreating, setIsCreating, setCreateType, setIsEdi
                                 <TeamChannelList
                                     {...listProps}
                                     type="team"
-                                    isCreating={isCreating}
-                                    setIsCreating={setIsCreating}
-                                    setCreateType={setCreateType}
-                                    setIsEditing={setIsEditing}
-                                    setToggleContainer={setToggleContainer}
-
                                 />
                             )}
                             Preview={(previewProps) => (
                                 <TeamChannelPreview
                                     {...previewProps}
                                     type="team"
-                                    setIsCreating={setIsCreating}
-                                    setIsEditing={setIsEditing}
-                                    setToggleContainer={setToggleContainer}
-
                                 />
                             )}
                         />
@@ -119,12 +105,7 @@ const ChannelListContent = ({ isCreating, setIsCreating, setCreateType, setIsEdi
                                 <TeamChannelList
                                     {...listProps}
                                     type="messaging"
-                                    isCreating={isCreating}
-                                    setIsCreating={setIsCreating}
-                                    setCreateType={setCreateType}
-                                    setIsEditing={setIsEditing}
-                                    setToggleContainer={setToggleContainer}
-                                    setShowInfo={setShowInfo}
+                                    
 
                                 />
                             )}
@@ -132,11 +113,6 @@ const ChannelListContent = ({ isCreating, setIsCreating, setCreateType, setIsEdi
                                 <TeamChannelPreview
                                     {...previewProps}
                                     type="messaging"
-                                    setIsCreating={setIsCreating}
-                                    setIsEditing={setIsEditing}
-                                    setToggleContainer={setToggleContainer}
-                                    setShowInfo={setShowInfo}
-
                                 />
                             )}
                         />
@@ -149,7 +125,7 @@ const ChannelListContent = ({ isCreating, setIsCreating, setCreateType, setIsEdi
     }
     return (
         <>
-            <Sidebar setToggleContainer={setToggleContainer} logout={logout} />
+            <Sidebar setToggleContainer={setToggleContainer} />
             <div className={"channel-list__list__wrapper"}>
                 <div style={{width:'100%'}}>
                     <CompanyHeader />
@@ -162,11 +138,11 @@ const ChannelListContent = ({ isCreating, setIsCreating, setCreateType, setIsEdi
                             <TeamChannelList
                                 {...listProps}
                                 type="team"
-                                isCreating={isCreating}
-                                setIsCreating={setIsCreating}
-                                setCreateType={setCreateType}
-                                setIsEditing={setIsEditing}
-                                setToggleContainer={setToggleContainer}
+                                // isCreating={isCreating}
+                                // setIsCreating={setIsCreating}
+                                // setCreateType={setCreateType}
+                                // setIsEditing={setIsEditing}
+                                // setToggleContainer={setToggleContainer}
 
                             />
                         )}
@@ -174,9 +150,9 @@ const ChannelListContent = ({ isCreating, setIsCreating, setCreateType, setIsEdi
                             <TeamChannelPreview
                                 {...previewProps}
                                 type="team"
-                                setIsCreating={setIsCreating}
-                                setIsEditing={setIsEditing}
-                                setToggleContainer={setToggleContainer}
+                                // setIsCreating={setIsCreating}
+                                // setIsEditing={setIsEditing}
+                                // setToggleContainer={setToggleContainer}
 
                             />
                         )}
@@ -189,24 +165,12 @@ const ChannelListContent = ({ isCreating, setIsCreating, setCreateType, setIsEdi
                             <TeamChannelList
                                 {...listProps}
                                 type="messaging"
-                                isCreating={isCreating}
-                                setIsCreating={setIsCreating}
-                                setCreateType={setCreateType}
-                                setIsEditing={setIsEditing}
-                                setToggleContainer={setToggleContainer}
-                                setShowInfo={setShowInfo}
-
                             />
                         )}
                         Preview={(previewProps) => (
                             <TeamChannelPreview
                                 {...previewProps}
-                                type="messaging"
-                                setIsCreating={setIsCreating}
-                                setIsEditing={setIsEditing} 
-                                setToggleContainer={setToggleContainer}
-                                setShowInfo={setShowInfo}
-                                    
+                                type="messaging"   
                             />
                         )}
                     />
@@ -218,10 +182,16 @@ const ChannelListContent = ({ isCreating, setIsCreating, setCreateType, setIsEdi
     );
 }
 
-const ChannelListContainer = ({ setCreateType, setIsCreating, setIsEditing, setToggleDark, toggleContainer, setToggleContainer, isMobile}) => {
+const ChannelListContainer = (/*{ setCreateType, setIsCreating, setIsEditing, setToggleDark, toggleContainer, setToggleContainer, isMobile}*/) => {
     // Empty array ensures that effect is only run on mount
-    
-    
+    const isMobile = useSelector(select.isMobile)
+    const toggleContainer = useSelector(select.toggleContainer)
+    let waitToRender = setTimeout(() => {
+        if(document.readyState === "complete"){
+            clearTimeout(waitToRender)
+        }
+    }, 300);
+    console.log("isMobile", isMobile)
     return(
         <> 
             {
@@ -235,27 +205,14 @@ const ChannelListContainer = ({ setCreateType, setIsCreating, setIsEditing, setT
                         <div className="channel-list__container-responsive__mask"
                         // style={{ left: toggleContainer ? "0%" : "-100%", backgroundColor: "#ffff", border: "1px solid rgb(120 117 117 / 47 %)" }}
                         >
-                            <ChannelListContent
-                                setIsCreating={setIsCreating}
-                                setCreateType={setCreateType}
-                                setIsEditing={setIsEditing}
-                                setToggleContainer={setToggleContainer}
-                                containerToggled={toggleContainer}
-                                isMobile={isMobile}
-                                setToggleDark={setToggleDark}
-                            />
+                            <ChannelListContent isMobile={isMobile}/>
                         </div>
                         
                     </div>
                 )
                 : (
                     <div className="channel-list__container">
-                        <ChannelListContent
-                            setIsCreating={setIsCreating}
-                            setCreateType={setCreateType}
-                            setToggleDark={setToggleDark}
-                            setIsEditing={setIsEditing}
-                        />
+                        <ChannelListContent/>
                     </div>
                 )
             }

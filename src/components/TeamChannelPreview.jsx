@@ -1,10 +1,12 @@
 import React from 'react'
+import { useDispatch } from 'react-redux';
 import { Avatar, useChatContext } from 'stream-chat-react'
+import { setIsCreating, setIsEditing, setToggleContainer } from '../redux/slices/main/mainSlice';
 
 
-const TeamChannelPreview = ({setActiveChannel, setIsCreating, setIsEditing, setToggleContainer, channel, type}) => {
+const TeamChannelPreview = ({setActiveChannel,  channel, type}) => {
     const {channel: activeChannel, client} = useChatContext();
-
+    const dispatch = useDispatch()
     const ChannelPreview = () =>{
         return(
             <p className="channel-preview__item">
@@ -12,10 +14,7 @@ const TeamChannelPreview = ({setActiveChannel, setIsCreating, setIsEditing, setT
             </p>
         )
     } ;
-    //(channel.state.members) returns an object with objects
-    //like this -> {12:{}, 23: {}, 45:{}}
-    //we can not iterate over it like with an array
-    //so we pick the values using js built-in fn Object.values
+
     const DirectPreview = ()=>{
 
         const members = Object.values(channel.state.members).filter(({ user }) => user.id !== client.userID )
@@ -28,7 +27,7 @@ const TeamChannelPreview = ({setActiveChannel, setIsCreating, setIsEditing, setT
                     name={members[0]?.user?.fullName}
                     size={24}
                 />
-                <p>{members[0]?.user?.fullName || members[0].user?.id}</p>
+                <p>{members[0]?.user?.name || members[0].user?.id}</p>
 
             </div>
         )
@@ -45,11 +44,11 @@ const TeamChannelPreview = ({setActiveChannel, setIsCreating, setIsEditing, setT
             }
             onClick={() =>{
                 setActiveChannel(channel)
-                setIsCreating(false);
-                setIsEditing(false);
+                dispatch(setIsCreating(false));
+                dispatch(setIsEditing(false));
                 
                 if(setToggleContainer){
-                    setToggleContainer((prevToggleContainer) => !prevToggleContainer)
+                    dispatch(setToggleContainer(false))
                 }
             }}
 

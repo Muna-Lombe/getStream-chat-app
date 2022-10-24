@@ -1,8 +1,13 @@
 import React from 'react'
+import { useDispatch } from 'react-redux';
+import { useSelector } from 'react-redux';
 
 import {AddChannel} from '../assets'
+import { setIsCreating, setIsEditing, setToggleContainer, setCreateType, select } from '../redux/slices/main/mainSlice';
 
-const TeamChannelList = ({children, setToggleContainer, error=false, loading, type, isCreating, setIsCreating, setCreateType, setIsEditing}) => {
+const TeamChannelList = ({children,  error=false, loading, type,}) => {
+    const isCreating = useSelector(select.isCreating)
+   
     if(error){
         console.log(error)
         return type === 'team' ? (
