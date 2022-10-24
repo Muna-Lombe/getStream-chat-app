@@ -186,6 +186,7 @@ const ChannelListContainer = (/*{ setCreateType, setIsCreating, setIsEditing, se
     // Empty array ensures that effect is only run on mount
     const isMobile = useSelector(select.isMobile)
     const toggleContainer = useSelector(select.toggleContainer)
+    const dispatch = useDispatch()
     let waitToRender = setTimeout(() => {
         if(document.readyState === "complete"){
             clearTimeout(waitToRender)
@@ -207,7 +208,9 @@ const ChannelListContainer = (/*{ setCreateType, setIsCreating, setIsEditing, se
                         >
                             <ChannelListContent isMobile={isMobile}/>
                         </div>
-                        
+                        <div className="channel-list__container-responsive__clickable-space" onClick={() => (toggleContainer ? dispatch(setToggleContainer(false)) : "")}>
+
+                        </div>
                     </div>
                 )
                 : (
