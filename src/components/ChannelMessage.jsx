@@ -359,9 +359,6 @@ const ChannelMessage =  ({keepAvtr}) => {
 
                     
                 </div>
-                {/* <div className='str-chat__message-team-actions'>
-                    <MessageOptions displayLeft={false} messageWrapperRef={messageWrapperRef} />
-                </div> */}
             </div>
     )}
     const MsgAvtr = () => (
@@ -386,7 +383,7 @@ const ChannelMessage =  ({keepAvtr}) => {
         )
     }
     return(
-    <div className='str-chat__message-team str-chat__message-team--top str-chat__message-team--regular  str-chat__message-team--received'>
+        <div className={'str-chat__message-team str-chat__message-team--top str-chat__message-team--regular  str-chat__message-team--received' + (!keepAvtr.includes(message.id) ? " in-group" : "") + (keepAvtr.includes(message.id) ? " first-in-group" : "")}>
         <MsgAvtrComp/>
         <div className={'str-chat__message-team--received'}>
             <MessageStatus />
@@ -409,7 +406,7 @@ const ChannelMessage =  ({keepAvtr}) => {
             }
             {/* {isActionEnabled && <MessageActions />} */}
             {/* <Thread  /> */}
-            <MessageRepliesCountButton reply_count={message.reply_count} />
+            <MessageRepliesCountButton onClick={handleOpenThread} reply_count={message.reply_count} />
             {/* <MessageSimple /> */}
         </>
     )

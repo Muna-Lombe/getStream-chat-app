@@ -1799,6 +1799,14 @@
     margin: 10px 0px;
     padding: 5px 10px;
   }
+  .str-chat__message-team.first-in-group{
+    margin: 10px 0px 0px 0px;
+    padding: 0px 10px;
+  }
+  .str-chat__message-team.in-group{
+    margin: 0px;
+    padding: 0px 10px;
+  }
   .str-chat__message-team--editing .str-chat__message-team-form-footer {
     padding: 10px 0 0;
   }
