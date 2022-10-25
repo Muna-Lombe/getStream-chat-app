@@ -286,6 +286,7 @@ const ChannelMessage =  ({keepAvtr}) => {
         <>
             <MessageOptions 
                 messageWrapperRef={messageWrapperRef} 
+                
                 // ActionsIcon={MoreIcon}
                 // ReactionIcon={ReactIconWrapper}
                 // ThreadIcon={ReplyIcon}
