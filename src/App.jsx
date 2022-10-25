@@ -92,29 +92,8 @@ const App = () => {
     return (
         <div className='app__wrapper'>
             <Chat client={client} theme='team light' darkMode={toggleDark}>
-                <ChannelListContainer 
-                    // isCreating={isCreating}
-                    // setIsCreating={setIsCreating}
-                    // setCreateType={setCreateType}
-                    // setIsEditing={setIsEditing}
-                    // setShowInfo={setShowInfo}
-                    // setToggleDark={setToggleDark}
-                    // setToggleContainer={setToggleContainer}
-                    // toggleContainer={toggleContainer}
-                    // isMobile={isMobile}
-                />
-                <ChannelContainer
-                    // isCreating={isCreating}
-                    // setIsCreating={setIsCreating}
-                    // isEditing={isEditing}
-                    // setIsEditing={setIsEditing}
-                    // showInfo={showInfo}
-                    // setShowInfo={setShowInfo}
-                    // createType = {createType}
-                    // setToggleContainer={setToggleContainer}
-                    // toggleContainer={toggleContainer}
-                    // isMobile={isMobile}
-                />
+                <ChannelListContainer />
+                <ChannelContainer/>
 
             </Chat>
         </div>

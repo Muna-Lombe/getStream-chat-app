@@ -265,54 +265,35 @@ const ChannelMessage =  ({keepAvtr}) => {
 
   const Reactions = () =>{
     const [reactionEnabled, setReactionEnabled] = useState(!isReactionEnabled)
-    const [isActionEnabled, setIsActionEnabled] = useState(!actionsEnabled);
     const handleOpenReactions = useCallback(() =>
         setReactionEnabled(prevState => !prevState),
-        [setReactionEnabled],
+        [isReactionEnabled],
     )
-    const handleOpenActions = useCallback(() =>
-        setIsActionEnabled(prevState => !prevState),
-        [setIsActionEnabled],
+  
+    const ReactIconWrapper = () => (
+        <ReactIcon onClick={() => setReactionEnabled(prevState => !prevState)} />
     )
+    const DelayedReactionSelector = ()=>{
+        setTimeout(() => {
+        }, 5000)
+        return(
+            <div className='message-team-reaction-icon'>
+                <ReactionSelector detailedView={false} ref={null} />
+            </div>
+        )
+    }
     return(
         <>
             <MessageOptions 
                 messageWrapperRef={messageWrapperRef} 
-                ActionsIcon={MoreIcon}
-                ReactionIcon={ReactIcon}
-                ThreadIcon={ReplyIcon}
+                // ActionsIcon={MoreIcon}
+                // ReactionIcon={ReactIconWrapper}
+                // ThreadIcon={ReplyIcon}
             />
-            {hasReactions &&
-                showDetailedReactions &&
-                isReactionEnabled &&
-                <SimpleReactionsList  />
-            }
+            {/* <DelayedReactionSelector /> */}
+            {reactionEnabled && <DelayedReactionSelector />}
         </>
-        // // <div className='str-chat__message-team-actions'>
-        //     {/* <ReactIcon onClick={handleOpenReactions} />
-
-        //     <ReplyIcon onClick={handleOpenThread} />
-
-        //     <MoreIcon onClick={handleOpenActions}/> */}
-
-        //     <>
-        //     </>
-            
-
-        //     {/* {reactionEnabled && (
-        //         <div className='message-team-reaction-icon'>
-        //             <ReactionSelector ref={reactionSelectorRef} />
-        //         </div>
-        //     )}
-            
-        //     {isActionEnabled && (
-        //         <div className='message-team-reaction-icon'>
-        //             <MessageActionsBox getMessageActions={getMessageActions} />
-        //         </div>
-        //     )} */}
-
-
-        // {/* // </div> */}
+        
     )
   }
   const CustomMessage = ({keepAvtr})=>{
@@ -346,7 +327,12 @@ const ChannelMessage =  ({keepAvtr}) => {
         return (
             <div className={'str-chat__message-team-group' + (isMyMessage() ? ' align-right' : ' ')}>
 
-                {keepAvtr.some((el) => (el.id === message.id && el.isFirstInGroup) || (el.id === message.id && el.isSingleton)) ? <Timestamp /> : ''}
+                {
+                    keepAvtr.some((el) => (el.id === message.id && el.isFirstInGroup) || (el.id === message.id && el.isSingleton)) 
+                    ? 
+                    <Timestamp /> : ''
+                }
+
                 <Reactions />
 
                 <div className={'str-chat__message-team-content str-chat__message-team-content--top str-chat__message-team-content--text'+(isMyMessage() ? ' align-invite-right' : '')}>
@@ -407,11 +393,11 @@ const ChannelMessage =  ({keepAvtr}) => {
             <MessageText customInnerClass={alignRightClass}  />
             {message.attachments && <Attachment attachments={message.attachments} />}
             {/* displays a reaction that has already been added */}
-            {/* {hasReactions && 
+            {hasReactions && 
                 !showDetailedReactions && 
                 isReactionEnabled && 
                 <SimpleReactionsList/>
-            } */}
+            }
             
             <MessageRepliesCountButton  onClick={handleOpenThread} reply_count={message.reply_count} />
             {/* <MessageSimple /> */}

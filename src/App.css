@@ -478,6 +478,9 @@
     right: 8px;
     bottom: -34px;
   }
+  .str-chat__message-simple__actions{
+    display: none;
+  }
   .str-chat__li:hover .str-chat__message-simple__actions  {
   /* position: absolute;
   top: -14px;
@@ -511,13 +514,13 @@
 .str-chat__li:hover .str-chat__message-simple__actions {
   margin-top: 0;
 }
-.str-chat__li:hover .str-chat__message-simple__actions__action--reactions {
+.str-chat__li:hover .str-chat__message-simple__actions .str-chat__message-simple__actions__action--reactions {
     display: flex;
   }
-.str-chat__li:hover .str-chat__message-simple__actions__action--options {
+.str-chat__li:hover .str-chat__message-simple__actions .str-chat__message-simple__actions__action--options {
     display: flex;
   }
-.str-chat__li:hover .str-chat__message-simple__actions__action--thread {
+.str-chat__li:hover .str-chat__message-simple__actions .str-chat__message-simple__actions__action--thread {
     display: flex;
   }
 
@@ -1380,34 +1383,34 @@
   }
   
   #react {
-    fill: #CCCCCC;
+    fill: #808080;
     cursor: pointer;
 
   }
  
   #react:hover path{
     
-    fill:#777777;
+    fill:#686868;
   }
   #reply{
-    fill: #CCCCCC;
+    fill: #808080;
     cursor: pointer;
 
   }
  
   #reply:hover path{
     
-    fill:#777777;
+    fill:#686868;
   }
   #more-actions{
-    fill: #CCCCCC;
+    fill: #808080;
     cursor: pointer;
 
   }
  
   #more-actions:hover path{
     
-    fill:#777777;
+    fill:#686868;
   }
   
   .team-channel-header__container {
@@ -1709,7 +1712,7 @@
     align-items: flex-end;
   }
   .str-chat__message-team--received {
-    padding-left: 20px;
+    padding-left: 0px;
   }
   
   .str-chat__message-replies-count-button {
@@ -1859,20 +1862,20 @@
     padding: 15px 20px;
   }
   .str-chat__message-team{
-    margin: 10px 0px;
-    padding: 5px 10px;
+    margin: 5px 0px;
+    padding: 0px 5px;
   }
   .str-chat__message-team.first-in-group{
-    margin: 10px 0px 0px 0px;
-    padding: 0px 10px;
+    margin: 5px 0px 0px 0px;
+    padding: 0px 5px;
   }
   .str-chat__message-team.in-group{
     margin: 0px;
-    padding: 0px 10px;
+    padding: 0px 5px;
   }
   .str-chat__message-team.last-in-group{
     margin: 0px;
-    padding: 0px 10px;
+    padding: 0px 5px;
   }
   .str-chat__message-team--editing .str-chat__message-team-form-footer {
     padding: 10px 0 0;
@@ -2163,9 +2166,13 @@
     mix-blend-mode: normal;
     opacity: 0.9;
   }
-  li.str-chat__li {
-      /* padding: 0 15px 0 15px; */
+  /* .message-team-reaction-icon{
+    display: none;
   }
+  li.str-chat__li:hover .message-team-reaction-icon-active {
+      display: flex;
+      
+  } */
   .str-chat__message-text-inner--align-right, .str-chat__message-simple-text-inner--align-right {
     position: relative;
     flex: 1 1;

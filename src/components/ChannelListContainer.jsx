@@ -9,10 +9,6 @@ import { ToggleTheme } from '../assets/ToggleTheme';
 import { select, setCreateType, setIsCreating, setIsEditing, setToggleContainer, setToggleDark } from '../redux/slices/main/mainSlice';
 
 
-
-
-
-
 const Sidebar = ({setToggleContainer, logout, isMobile, children, setToggleDark}) => (
     <div className={"channel-list__sidebar"+(isMobile ? "__mobile" : "")}>
         
@@ -187,11 +183,19 @@ const ChannelListContainer = (/*{ setCreateType, setIsCreating, setIsEditing, se
     const isMobile = useSelector(select.isMobile)
     const toggleContainer = useSelector(select.toggleContainer)
     const dispatch = useDispatch()
-    let waitToRender = setTimeout(() => {
-        if(document.readyState === "complete"){
-            clearTimeout(waitToRender)
+    useEffect(() => {
+        function handleDelayedRender(){
+            let waitToRender = setTimeout(() => {
+                if(document.readyState === "complete"){
+                    clearTimeout(waitToRender)
+                }
+            }, 300);
         }
-    }, 300);
+        
+        document.addEventListener("readystatechange", handleDelayedRender);
+        return document.removeEventListener("readystatechange", handleDelayedRender)
+    }, [])
+    
     console.log("isMobile", isMobile)
     return(
         <> 
