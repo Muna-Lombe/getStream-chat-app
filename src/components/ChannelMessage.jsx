@@ -23,6 +23,7 @@ import {
   Message,
   MessageSimple,
   ReactionsList,
+  showMessageActionsBox,
   
 } from 'stream-chat-react';
 
@@ -46,12 +47,10 @@ const ChannelMessage =  ({keepAvtr}) => {
     handleOpenThread,
     messageListRect,
     isMyMessage,
-    
-    
   } = useMessageContext();
   const { client } = useChatContext();
 //   const [reactionEnabled, setReactionEnabled] = useState(!isReactionEnabled);
-  const [isActionEnabled, setIsActionEnabled] = useState(!actionsEnabled);
+//   const [isActionEnabled, setIsActionEnabled] = useState(!actionsEnabled);
   const [inviteState, setInviteState] = useState({status:"invited", ownuser:{name:"$missing"}});
   const [channel, setChannel] = useState({id:message.channel_data?.id, name:'Apache'});
   const [invitee, setInvitee] = useState()
@@ -256,49 +255,42 @@ const ChannelMessage =  ({keepAvtr}) => {
         } catch (err) {
             return err;
         }
-        
-        
-    }//,
-    //   [channel.id],
-    // )
-
-//   console.log('isrec:', isReactionEnabled)
-//   console.log('show:', showDetailedReactions)
-//   console.log('actions ico:', ActionsIcon)
-//   console.log('message context:', useMessageContext)
-//   console.log('message invite:', message)
+    }
 
 
 
-  const openThread = useOpenThreadHandler(message,(message))
-  const messageWrapperRef = useRef(null);
 
-
+  const messageWrapperRef = useRef(message)
   const hasReactions = messageHasReactions(message);
 
   const Reactions = () =>{
     const [reactionEnabled, setReactionEnabled] = useState(!isReactionEnabled)
+    const [isActionEnabled, setIsActionEnabled] = useState(!actionsEnabled);
+    const handleOpenReactions = useCallback(() =>
+        setReactionEnabled(prevState => !prevState),
+        [setReactionEnabled],
+    )
+    const handleOpenActions = useCallback(() =>
+        setIsActionEnabled(prevState => !prevState),
+        [setIsActionEnabled],
+    )
+      console.log("actionsss", getMessageActions())
     return(
         <div className='str-chat__message-team-actions'>
-            <ReactIcon onClick={useCallback(() =>
-                setReactionEnabled(prevState => !prevState),
-                [setReactionEnabled],
-            )
-            } />
+            {/* <ReactIcon onClick={handleOpenReactions} />
 
-            <ReplyIcon openThread={handleOpenThread} />
-            {/* <Thread /> */}
-            {/* <ThreadIcon  /> */}
-            <MoreIcon /*setDetailedReactions={setDetailedReactions}*/ />
+            <ReplyIcon onClick={handleOpenThread} />
 
+            <MoreIcon onClick={handleOpenActions}/> */}
 
+            
             <MessageOptions
-                displayLeft={false}
-                displayReplies={true}
+                // displayLeft={false}
+                // displayReplies={true}
                 messageWrapperRef={messageWrapperRef}
-            // ActionsIcon={ActionsIcon}
-            // ReactionIcon={ReactionIcon}
-            // ThreadIcon={ThreadIcon}
+                // ActionsIcon={MoreIcon}
+                // ReactionIcon={ReactIcon}
+                // ThreadIcon={ReplyIcon}
 
             />
 
@@ -307,6 +299,13 @@ const ChannelMessage =  ({keepAvtr}) => {
                     <ReactionSelector ref={reactionSelectorRef} />
                 </div>
             )}
+            
+            {isActionEnabled && (
+                <div className='message-team-reaction-icon'>
+                    <MessageActionsBox getMessageActions={getMessageActions} />
+                </div>
+            )}
+
 
         </div>
     )

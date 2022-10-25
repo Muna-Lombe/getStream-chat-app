@@ -1,10 +1,10 @@
 
 import React from 'react';
 
-export const ReplyIcon = ({openThread}) => (
+export const ReplyIcon = ({onClick}) => (
   <p  
   style={{ display:'flex', justifyContent: 'center', alignItems: 'center' }}
-  onClick={()=>openThread()}
+  // onClick={()=>openThread()}
   >
     <svg 
         id='reply' 
@@ -13,7 +13,7 @@ export const ReplyIcon = ({openThread}) => (
         viewBox="0 0 16 16" 
         fill="none" 
         xmlns="http://www.w3.org/2000/svg"
-        onClick={openThread}
+        onClick={onClick}
 
         >
         
