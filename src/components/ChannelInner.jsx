@@ -46,9 +46,9 @@ const ChannelInner = () => {
       if(noGrp) return "none";
       let prevId,msgId,nxtId,singleton,group;
       let first, firstInGrp, middleInGrp, lastInGrp;
-      prevId = (prevMsg === undefined) ? false : (prevMsg?.type === "regular" ? prevMsg.created_at : prevMsg.date.id)
-      msgId = (msg === undefined) ? false : (msg?.type === "regular" ? msg.created_at : msg.date.id)
-      nxtId = (nxtMsg === undefined) ? false : (nxtMsg?.type === "regular" ? nxtMsg.created_at : nxtMsg.date.id)
+      prevId = (prevMsg === undefined) ? false : (prevMsg?.type === "regular" ? prevMsg?.created_at : prevMsg?.date?.id)
+      msgId = (msg === undefined) ? false : (msg?.type === "regular" ? msg?.created_at : msg?.date?.id)
+      nxtId = (nxtMsg === undefined) ? false : (nxtMsg?.type === "regular" ? nxtMsg?.created_at : nxtMsg?.date?.id)
       singleton = ((prevMsg?.user?.id !== msg?.user?.id) && (msg?.user?.id !== nxtMsg?.user?.id))
       group = true||((prevMsg?.user?.id === msg?.user?.id) && (msg?.user?.id === nxtMsg?.user?.id))
       firstInGrp = ((prevMsg?.user?.id !== msg?.user?.id) && (msg?.user?.id === nxtMsg?.user?.id))
@@ -61,13 +61,13 @@ const ChannelInner = () => {
       if (singleton) {
         // console.log("single")
 
-        isFirstOrSingleton.push(msg.id)
+        isFirstOrSingleton.push({id: msg.id, isSingleton: true})
         return "single"
       }
       
         if ((!prevId && msgId) || firstInGrp){
           // console.log("top")
-          isFirstOrSingleton.push(msg.id)
+          isFirstOrSingleton.push({ id: msg.id, isFirstInGroup: true })
           return "top"
         }
         if ((prevId === msgId && msgId  === nxtId) || middleInGrp) {
@@ -76,6 +76,7 @@ const ChannelInner = () => {
         }
         if ((prevId && msgId && !nxtId) || lastInGrp) {
           // console.log("bottom")
+          isFirstOrSingleton.push({id:msg.id, isSingleton:false})
           return "bottom"
         }
       

@@ -56,7 +56,7 @@ const ChannelMessage =  ({keepAvtr}) => {
   const [invitee, setInvitee] = useState()
   const [inviteResponse, setInviteResponse] = useState(false)
 
-    console.log("keep", keepAvtr)
+    // console.log("keep", keepAvtr)
     
     useEffect(() => {
       if(message.isInvite){
@@ -260,7 +260,7 @@ const ChannelMessage =  ({keepAvtr}) => {
 
 
 
-  const messageWrapperRef = useRef(message)
+  const messageWrapperRef = useRef(null)
   const hasReactions = messageHasReactions(message);
 
   const Reactions = () =>{
@@ -274,52 +274,67 @@ const ChannelMessage =  ({keepAvtr}) => {
         setIsActionEnabled(prevState => !prevState),
         [setIsActionEnabled],
     )
-      console.log("actionsss", getMessageActions())
     return(
-        <div className='str-chat__message-team-actions'>
-            {/* <ReactIcon onClick={handleOpenReactions} />
-
-            <ReplyIcon onClick={handleOpenThread} />
-
-            <MoreIcon onClick={handleOpenActions}/> */}
-
-            
-            <MessageOptions
-                // displayLeft={false}
-                // displayReplies={true}
-                messageWrapperRef={messageWrapperRef}
-                // ActionsIcon={MoreIcon}
-                // ReactionIcon={ReactIcon}
-                // ThreadIcon={ReplyIcon}
-
+        <>
+            <MessageOptions 
+                messageWrapperRef={messageWrapperRef} 
+                ActionsIcon={MoreIcon}
+                ReactionIcon={ReactIcon}
+                ThreadIcon={ReplyIcon}
             />
+            {/* {hasReactions &&
+                showDetailedReactions &&
+                isReactionEnabled &&
+                
+            } */}
+            <SimpleReactionsList  />
+        </>
+        // // <div className='str-chat__message-team-actions'>
+        //     {/* <ReactIcon onClick={handleOpenReactions} />
 
-            {reactionEnabled && (
-                <div className='message-team-reaction-icon'>
-                    <ReactionSelector ref={reactionSelectorRef} />
-                </div>
-            )}
+        //     <ReplyIcon onClick={handleOpenThread} />
+
+        //     <MoreIcon onClick={handleOpenActions}/> */}
+
+        //     <>
+        //     </>
             
-            {isActionEnabled && (
-                <div className='message-team-reaction-icon'>
-                    <MessageActionsBox getMessageActions={getMessageActions} />
-                </div>
-            )}
+
+        //     {/* {reactionEnabled && (
+        //         <div className='message-team-reaction-icon'>
+        //             <ReactionSelector ref={reactionSelectorRef} />
+        //         </div>
+        //     )}
+            
+        //     {isActionEnabled && (
+        //         <div className='message-team-reaction-icon'>
+        //             <MessageActionsBox getMessageActions={getMessageActions} />
+        //         </div>
+        //     )} */}
 
 
-        </div>
+        // {/* // </div> */}
     )
   }
   const CustomMessage = ({keepAvtr})=>{
+    const Usrname = () => (
+        <div className={'str-chat__message-team-author'}>
+            {message.user?.name}
+        </div>
+    )
+    const Timestamp = () => (
+        <div className='str-chat__message-header-timestamp'>
+            <MessageTimestamp />
+        </div>    
+    )
     const AvtrComp  =()=> (
         <div className='str-chat__message-team-meta'>
             {
-                keepAvtr.includes(message.id) ? 
+                keepAvtr.some((el) => el.id === message.id && !el.isFirstInGroup ) ? 
                 <>
                     <Avatar image={message.user?.image} name={message.user?.name} />
-                    <div className='message-header-timestamp'>
-                        <MessageTimestamp />
-                    </div>
+                    <Usrname />
+                    
                 </>
                 :""
 
@@ -329,15 +344,10 @@ const ChannelMessage =  ({keepAvtr}) => {
         </div>
     )
     const MsgComp =()=>{
-        const Usrname = () => (
-            <div className={'str-chat__message-team-author'}>
-                {message.user?.name}
-            </div>
-        )
         return (
             <div className={'str-chat__message-team-group' + (isMyMessage() ? ' align-right' : ' ')}>
 
-                {keepAvtr.includes(message.id) ? <Usrname /> : ''}
+                {keepAvtr.some((el) => (el.id === message.id && el.isFirstInGroup) || (el.id === message.id && el.isSingleton)) ? <Timestamp /> : ''}
                 <Reactions />
 
                 <div className={'str-chat__message-team-content str-chat__message-team-content--top str-chat__message-team-content--text'+(isMyMessage() ? ' align-invite-right' : '')}>
@@ -382,7 +392,7 @@ const ChannelMessage =  ({keepAvtr}) => {
         )
     }
     return(
-        <div className={'str-chat__message-team str-chat__message-team--top str-chat__message-team--regular  str-chat__message-team--received' + (!keepAvtr.includes(message.id) ? " in-group" : "") + (keepAvtr.includes(message.id) ? " first-in-group" : "")}>
+        <div className={'str-chat__message-team str-chat__message-team--top str-chat__message-team--regular  str-chat__message-team--received' + (!keepAvtr.some((el) => el.id === message.id) ? " in-group" : "") + (keepAvtr.some((el) => el.id === message.id && el.isFirstInGroup) ? " first-in-group" : "") + (keepAvtr.some((el) => el.id === message.id && !el.isFirstInGroup) ? " last-in-group" : "")}>
         <MsgAvtrComp/>
         <div className={'str-chat__message-team--received'}>
             <MessageStatus />
@@ -391,21 +401,20 @@ const ChannelMessage =  ({keepAvtr}) => {
     )
   }
   const RegularMessage = () => {
-      const alignRightClass = `str-chat__message-text-inner${(isMyMessage() ? "--align-right" : "")} str-chat__message-simple-text-inner${(isMyMessage() ? "--align-right" : "") }`;
+    const alignRightClass = `str-chat__message-text-inner${(isMyMessage() ? "--align-right" : "")} str-chat__message-simple-text-inner${(isMyMessage() ? "--align-right" : "") }`;
 
     return(
         <>
             <MessageText customInnerClass={alignRightClass}  />
             {message.attachments && <Attachment attachments={message.attachments} />}
             {/* displays a reaction that has already been added */}
-            {hasReactions && 
+            {/* {hasReactions && 
                 !showDetailedReactions && 
                 isReactionEnabled && 
-                <SimpleReactionsList  />
-            }
-            {/* {isActionEnabled && <MessageActions />} */}
-            {/* <Thread  /> */}
-            <MessageRepliesCountButton onClick={handleOpenThread} reply_count={message.reply_count} />
+                <SimpleReactionsList/>
+            } */}
+            
+            <MessageRepliesCountButton  onClick={handleOpenThread} reply_count={message.reply_count} />
             {/* <MessageSimple /> */}
         </>
     )
