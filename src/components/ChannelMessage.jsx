@@ -282,12 +282,11 @@ const ChannelMessage =  ({keepAvtr}) => {
                 ReactionIcon={ReactIcon}
                 ThreadIcon={ReplyIcon}
             />
-            {/* {hasReactions &&
+            {hasReactions &&
                 showDetailedReactions &&
                 isReactionEnabled &&
-                
-            } */}
-            <SimpleReactionsList  />
+                <SimpleReactionsList  />
+            }
         </>
         // // <div className='str-chat__message-team-actions'>
         //     {/* <ReactIcon onClick={handleOpenReactions} />
