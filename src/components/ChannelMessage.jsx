@@ -22,6 +22,7 @@ import {
   ReactionIcon,
   Message,
   MessageSimple,
+  ReactionsList,
   
 } from 'stream-chat-react';
 
@@ -30,7 +31,7 @@ import { ChannelInvite } from '.';
 import { useEffect } from 'react';
 // import './CustomMessage.scss';
 
-const ChannelMessage =  () => {
+const ChannelMessage =  ({keepAvtr}) => {
   const {
     isReactionEnabled,
     message,
@@ -44,7 +45,9 @@ const ChannelMessage =  () => {
     handleReaction,
     handleOpenThread,
     messageListRect,
-    isMyMessage
+    isMyMessage,
+    
+    
   } = useMessageContext();
   const { client } = useChatContext();
 //   const [reactionEnabled, setReactionEnabled] = useState(!isReactionEnabled);
@@ -54,7 +57,7 @@ const ChannelMessage =  () => {
   const [invitee, setInvitee] = useState()
   const [inviteResponse, setInviteResponse] = useState(false)
 
-    
+    console.log("keep", keepAvtr)
     
     useEffect(() => {
       if(message.isInvite){
@@ -221,7 +224,6 @@ const ChannelMessage =  () => {
     // check inviteStatus
     
     /// checking for and setting the channel
-    
     const updateChannel = //useCallback(
       async () =>{
         const doUpdate = async()=>{
@@ -273,6 +275,7 @@ const ChannelMessage =  () => {
 
 
   const hasReactions = messageHasReactions(message);
+
   const Reactions = () =>{
     const [reactionEnabled, setReactionEnabled] = useState(!isReactionEnabled)
     return(
@@ -290,7 +293,7 @@ const ChannelMessage =  () => {
 
 
             <MessageOptions
-                displayLeft={true}
+                displayLeft={false}
                 displayReplies={true}
                 messageWrapperRef={messageWrapperRef}
             // ActionsIcon={ActionsIcon}
@@ -308,14 +311,22 @@ const ChannelMessage =  () => {
         </div>
     )
   }
-  const CustomMessage = ()=>{
+  const CustomMessage = ({keepAvtr})=>{
     const AvtrComp  =()=> (
         <div className='str-chat__message-team-meta'>
+            {
+                keepAvtr.includes(message.id) ? 
+                <>
+                    <Avatar image={message.user?.image} name={message.user?.name} />
+                    <div className='message-header-timestamp'>
+                        <MessageTimestamp />
+                    </div>
+                </>
+                :""
 
-            <Avatar image={message.user?.image} name={message.user?.name} />
-            <div className='message-header-timestamp'>
-                <MessageTimestamp />
-            </div>
+            }
+            
+            
         </div>
     )
     const MsgComp =()=>{
@@ -325,65 +336,77 @@ const ChannelMessage =  () => {
             </div>
         )
         return (
-            <div className={'str-chat__message-team-group' + (!isMyMessage() ? ' align-right' : ' ')}>
+            <div className={'str-chat__message-team-group' + (isMyMessage() ? ' align-right' : ' ')}>
 
-            <Usrname/>
+                {keepAvtr.includes(message.id) ? <Usrname /> : ''}
+                <Reactions />
 
-            <Reactions />
+                <div className={'str-chat__message-team-content str-chat__message-team-content--top str-chat__message-team-content--text'+(isMyMessage() ? ' align-invite-right' : '')}>
+                    {
+                        message.isInvite ?
+                            <ChannelInvite
+                                message={memoizedMessage}
+                                acceptInvite={acceptInvite}
+                                rejectInvite={rejectInvite}
+                                isReceiver={message.receiver === client.user?.id}
+                                inviteState={inviteState}
+                                // isMyMsg={isMyMessage}
+                            /*inviteState={()=>("invited")}*/
+                            />
 
-            <div className='str-chat__message-team-content str-chat__message-team-content--top str-chat__message-team-content--text'>
-                {
-                    message.isInvite ?
-                        <ChannelInvite
-                            message={memoizedMessage}
-                            acceptInvite={acceptInvite}
-                            rejectInvite={rejectInvite}
-                            isReceiver={message.receiver === client.user?.id}
-                            inviteState={inviteState}
-                        /*inviteState={()=>("invited")}*/
-                        />
+                            : <RegularMessage />
+                    }
 
-                        : <RegularMessage />
-                }
-
-                
+                    
+                </div>
+                {/* <div className='str-chat__message-team-actions'>
+                    <MessageOptions displayLeft={false} messageWrapperRef={messageWrapperRef} />
+                </div> */}
             </div>
-            {/* <div className='str-chat__message-team-actions'>
-                <MessageOptions displayLeft={false} messageWrapperRef={messageWrapperRef} />
-            </div> */}
-        </div>
     )}
+    const MsgAvtr = () => (
+        <>
+            <AvtrComp />
+            <MsgComp />
+        </>
+    )
+    const MsgAvtrReversed = () => (
+        <>
+            <MsgComp />
+            <AvtrComp /> 
+        </>
+
+    )
+    const MsgAvtrComp = () => {
+        return (
+            
+            isMyMessage() ?
+                <MsgAvtrReversed/>
+                :<MsgAvtr/>
+        )
+    }
     return(
     <div className='str-chat__message-team str-chat__message-team--top str-chat__message-team--regular  str-chat__message-team--received'>
-        {
-            isMyMessage() ?
-            ( 
-                <>
-                    <MsgComp />
-                    <AvtrComp />
-                </>
-            )
-            :
-            (
-                <>
-                    <AvtrComp />
-                    <MsgComp/>
-                </>
-            )
-        }
-            <div className={'str-chat__message-team--received'}>
-                <MessageStatus />
-            </div>
+        <MsgAvtrComp/>
+        <div className={'str-chat__message-team--received'}>
+            <MessageStatus />
+        </div>
     </div>
     )
   }
   const RegularMessage = () => {
+      const alignRightClass = `str-chat__message-text-inner${(isMyMessage() ? "--align-right" : "")} str-chat__message-simple-text-inner${(isMyMessage() ? "--align-right" : "") }`;
+
     return(
         <>
-            <MessageText />
+            <MessageText customInnerClass={alignRightClass}  />
             {message.attachments && <Attachment attachments={message.attachments} />}
             {/* displays a reaction that has already been added */}
-            {hasReactions && !showDetailedReactions && isReactionEnabled && <SimpleReactionsList />}
+            {hasReactions && 
+                !showDetailedReactions && 
+                isReactionEnabled && 
+                <SimpleReactionsList  />
+            }
             {/* {isActionEnabled && <MessageActions />} */}
             {/* <Thread  /> */}
             <MessageRepliesCountButton reply_count={message.reply_count} />
@@ -396,11 +419,7 @@ const ChannelMessage =  () => {
 
   return (
         
-    
-    //    message.isInvite
-            // ? <ChannelInvite message={{ text: message.text, chanId: channel.id, user: message.user }} isInviter={message.receiver === client.user?.id} acceptInvite={acceptInvite} rejectInvite={rejectInvite} />
-
-            <CustomMessage /> //<RegularMessage />
+            <CustomMessage keepAvtr={keepAvtr}/> //<RegularMessage />
        
   );
 };

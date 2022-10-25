@@ -7,7 +7,9 @@ import { setIsCreating, setIsEditing, setToggleContainer, setCreateType, select 
 
 const TeamChannelList = ({children,  error=false, loading, type,}) => {
     const isCreating = useSelector(select.isCreating)
-   
+    const isEditing = useSelector(select.isEditing)
+    const toggleContainer = useSelector(select.toggleContainer)
+   const dispatch = useDispatch()
     if(error){
         console.log(error)
         return type === 'team' ? (
@@ -40,10 +42,10 @@ const TeamChannelList = ({children,  error=false, loading, type,}) => {
                 <AddChannel
                     type = {type === 'team' ? 'team' : 'messaging'}
                     isCreating={isCreating}
-                    setIsCreating={setIsCreating}
-                    setCreateType={setCreateType}
-                    setIsEditing={setIsEditing}
-                    setToggleContainer={setToggleContainer}
+                    setIsCreating={() => dispatch(setIsCreating(!isCreating))}
+                    setCreateType={() => dispatch(setCreateType(type))}
+                    setIsEditing={() => dispatch(setIsEditing(!isEditing))}
+                    setToggleContainer={() => dispatch(setToggleContainer(!toggleContainer))}
 
                 />
             </div>

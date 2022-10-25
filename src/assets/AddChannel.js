@@ -1,7 +1,7 @@
 import React from 'react';
 import { useDispatch } from 'react-redux';
-export const AddChannel = ({ setCreateType, setIsCreating, setIsEditing, setToggleContainer, type }) =>{
-  const dispatch = useDispatch();
+export const AddChannel = ({ setCreateType, setIsCreating, setIsEditing, setToggleContainer}) =>{
+
 
   return(
     <svg
@@ -11,10 +11,10 @@ export const AddChannel = ({ setCreateType, setIsCreating, setIsEditing, setTogg
       fill='none'
       xmlns='http://www.w3.org/2000/svg'
       onClick={() => {
-        if(setCreateType) dispatch(setCreateType(type));
-        if(setIsCreating) dispatch(setIsCreating(false));
-        if(setIsEditing) dispatch(setIsEditing(false));
-        if(setToggleContainer) dispatch(setToggleContainer(false))
+        if(setCreateType) setCreateType();
+        if(setIsCreating) setIsCreating();
+        if(setIsEditing) setIsEditing();
+        if(setToggleContainer) setToggleContainer()
       }}
     >
       <path

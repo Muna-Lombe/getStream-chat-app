@@ -39,25 +39,47 @@ const ChannelInner = () => {
 
   
 
-  
-  const groupingStyle=(prevMsg, msg, nxtMsg, noGrp, one, two, three)=>{
-    console.log("....////....", prevMsg, msg, nxtMsg, noGrp, one, two, three, "....\\\....")
+  let isFirstOrSingleton = [];
+  const groupingStyle=(msg, prevMsg, nxtMsg, noGrp, one, two, three)=>{
+    // console.log("....////....", prevMsg, msg, nxtMsg, noGrp, one, two, three, "....\\\....")
     try {
       if(noGrp) return "none";
-      let prevId,msgId,nxtId
+      let prevId,msgId,nxtId,singleton,group;
+      let first, firstInGrp, middleInGrp, lastInGrp;
       prevId = (prevMsg === undefined) ? false : (prevMsg?.type === "regular" ? prevMsg.created_at : prevMsg.date.id)
       msgId = (msg === undefined) ? false : (msg?.type === "regular" ? msg.created_at : msg.date.id)
       nxtId = (nxtMsg === undefined) ? false : (nxtMsg?.type === "regular" ? nxtMsg.created_at : nxtMsg.date.id)
-      // console.log(`msgs: ${msg}, ${prevMsg}, ${nxtMsg}, ${noGrp}`)
-      if (prevId === false){
-        return "top"
+      singleton = ((prevMsg?.user?.id !== msg?.user?.id) && (msg?.user?.id !== nxtMsg?.user?.id))
+      group = true||((prevMsg?.user?.id === msg?.user?.id) && (msg?.user?.id === nxtMsg?.user?.id))
+      firstInGrp = ((prevMsg?.user?.id !== msg?.user?.id) && (msg?.user?.id === nxtMsg?.user?.id))
+      middleInGrp = ((prevMsg?.user?.id === msg?.user?.id) && (msg?.user?.id === nxtMsg?.user?.id))
+      lastInGrp = ((prevMsg?.user?.id === msg?.user?.id) && (msg?.user?.id !== nxtMsg?.user?.id))
+
+      // console.log(`msgs:`, "\n prev-", prevMsg, "\n msg-", msg, "\n nxt-", nxtMsg, "\n noGrp-", noGrp, "\n")
+
+      
+      if (singleton) {
+        // console.log("single")
+
+        isFirstOrSingleton.push(msg.id)
+        return "single"
       }
-      if (nxtId === false) {
-        return "bottom"
-      }
-      if (prevId === msgId && msgId  === nxtId) {
-        return "middle"
-      }
+      
+        if ((!prevId && msgId) || firstInGrp){
+          // console.log("top")
+          isFirstOrSingleton.push(msg.id)
+          return "top"
+        }
+        if ((prevId === msgId && msgId  === nxtId) || middleInGrp) {
+          // console.log("middle")
+          return "middle"
+        }
+        if ((prevId && msgId && !nxtId) || lastInGrp) {
+          // console.log("bottom")
+          return "bottom"
+        }
+      
+      
       
     } catch (error) {
       console.log(error)
@@ -207,9 +229,9 @@ const ChannelInner = () => {
           {/* <MessageList   /> */}
           {/* groupStyles={groupingStyle} */}
           {/* <MessageList noGroupByUser={false} Message={(messageProps, i) => <MessageSimple key={i} {...messageProps} />} /> */}
-          <MessageList noGroupByUser={false}  Message={ (messageProps,i) => <ChannelMessage key={i} {...messageProps}  /> }  />
+          <MessageList  noGroupByUser={false} groupStyles={groupingStyle}  Message={ (messageProps,i) => <ChannelMessage key={i} {...messageProps} keepAvtr={isFirstOrSingleton}   />}  />
           {/* <VirtualizedMessageList shouldGroupByUser={true} /> */}
-          {/* <VirtualizedMessageList shouldGroupByUser={true} Message={ (messageProps,i) => <ChannelMessage key={i} {...messageProps}  /> } /> */}
+          {/* <VirtualizedMessageList shouldGroupByUser={true} Message={(messageProps, i) => <ChannelMessage key={i} {...messageProps} keepAvtr={messageProps.firstOfGroup} /> } /> */}
           {/* Message={ (messageProps,i) => <ChannelMessage key={i} {...messageProps} /> }  */}
           
           {/* {hasChannelInvite && <ChannelInvite setChannel={setChannel} setAccept={setAccept} setReject={setReject} setInvite={setInvite}/>} */}
