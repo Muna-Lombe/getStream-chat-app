@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useCallback, useState } from 'react';
 import { StreamChat } from 'stream-chat';
 import { Chat, darkModeTheme } from 'stream-chat-react';
 import Cookies from 'universal-cookie/es6';
@@ -10,7 +10,8 @@ import 'stream-chat-react/dist/css/index.css'
 import './App.css';
 import { dc, FA } from './components/Auth';
 import { useEffect } from 'react';
-
+import { useDispatch, useSelector } from 'react-redux'
+import { select, setIsCreating, setIsMobile } from './redux/slices/main/mainSlice';
 //get cookies
 const cookies = new Cookies();
 
@@ -29,7 +30,8 @@ const client = StreamChat.getInstance(apiKey);
 
 
 //create user instance
-if(authToken){
+if (authToken && !client._hasConnectionID()){
+    console.log("has con", client._hasConnectionID())
     client.connectUser({
         id: cookies.get('userId'),
         name: cookies.get('username'),
@@ -41,31 +43,39 @@ if(authToken){
 }
 
 const App = () => {
-    const [createType, setCreateType] = useState('');
-    const [isCreating, setIsCreating] = useState(false);
-    const [isEditing, setIsEditing] = useState(false);
-    const [showInfo, setShowInfo] = useState(false);
-    const [toggleDark, setToggleDark] = useState(false)
-    const [toggleContainer, setToggleContainer] = useState(true)
-    const [isMobile, setIsMobile] = useState(false)
-
-
+    // const [createType, setCreateType] = useState('');
+    // const [isCreating, setIsCreating] = useState(false);
+    // const [isEditing, setIsEditing] = useState(false);
+    // const [showInfo, setShowInfo] = useState(false);
+    // const [toggleDark, setToggleDark] = useState(false)
+    // const [toggleContainer, setToggleContainer] = useState(true)
+    const [isMobile, setMobile] = useState((window.innerWidth <= 960))
     
+    const dispatch  = useDispatch()
+    
+
+    // Handler to call on window resize
     useEffect(() => {
-        // Handler to call on window resize
+        
         function handleResize() {
-            setIsMobile((window.innerWidth <= 720))
+            setMobile((window.innerWidth <= 960))
+            // dispatch(setIsMobile((isMobile)))
         }
         // Add event listener
         window.addEventListener("resize", handleResize);
         // Call handler right away so state gets updated with initial window size
-        handleResize();
+        // handleResize();
         // Remove event listener on cleanup
         return () => window.removeEventListener("resize", handleResize);
     }, []); 
     
-  
+    //Updates mobile status only on value difference
+    (useCallback(()=>{
+        let action = setIsMobile({ isMobile })
+        dispatch(action)
+    }, [isMobile]))()
 
+    
     
 
     //fetch list of channels
@@ -75,36 +85,15 @@ const App = () => {
         });
         console.log(fetchedChannels)
     };
-
+    
+    const toggleDark = useSelector(select.toggleDark)
 	// getChans();
     if (!authToken) return <Auth/>
     return (
         <div className='app__wrapper'>
             <Chat client={client} theme='team light' darkMode={toggleDark}>
-                <ChannelListContainer 
-                    isCreating={isCreating}
-                    setIsCreating={setIsCreating}
-                    setCreateType={setCreateType}
-                    isEditing={isEditing}
-                    setIsEditing={setIsEditing}
-                    setShowInfo={setShowInfo}
-                    setToggleDark={setToggleDark}
-                    setToggleContainer={setToggleContainer}
-                    toggleContainer={toggleContainer}
-                    isMobile={isMobile}
-                />
-                <ChannelContainer
-                    isCreating={isCreating}
-                    setIsCreating={setIsCreating}
-                    isEditing={isEditing}
-                    setIsEditing={setIsEditing}
-                    showInfo={showInfo}
-                    setShowInfo={setShowInfo}
-                    createType = {createType}
-                    setToggleContainer={setToggleContainer}
-                    toggleContainer={toggleContainer}
-                    isMobile={isMobile}
-                />
+                <ChannelListContainer />
+                <ChannelContainer/>
 
             </Chat>
         </div>

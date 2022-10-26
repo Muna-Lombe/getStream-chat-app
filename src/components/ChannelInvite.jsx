@@ -1,7 +1,7 @@
 import React, { useState } from 'react'
 
 
-const ChannelInvite = ({acceptInvite, rejectInvite, message, inviteState, isReceiver}) => {
+const ChannelInvite = ({acceptInvite, rejectInvite, message, inviteState, isReceiver, isMyMsg}) => {
    
     
     const IsInviterMessage = () => {
@@ -56,7 +56,7 @@ const ChannelInvite = ({acceptInvite, rejectInvite, message, inviteState, isRece
         </>
     )
     return (
-        <div className='str-chat__invite-card__wrapper'>
+        <div className={'str-chat__invite-card__wrapper'+(isMyMsg ? ' align-right' : '') }>
             <div className="str-chat__invite-card__header">
                 <div className="str-chat__invite-card__channel-name">
                     <p> New Channel Invite </p> 

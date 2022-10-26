@@ -1,16 +1,20 @@
 import React, { useState } from 'react';
-import { MessageList, MessageInput, Thread, Window, useChannelActionContext, Avatar, useChannelStateContext, useChatContext, VirtualizedMessageList, MessageInputFlat, MessageInputSmall, MessageInputContextProvider } from 'stream-chat-react';
+import { useSelector } from 'react-redux';
+import { useDispatch } from 'react-redux';
+import { MessageList, MessageInput, Thread, Window, useChannelActionContext, Avatar, useChannelStateContext, useChatContext, VirtualizedMessageList, MessageInputFlat, MessageInputSmall, MessageInputContextProvider, MessageSimple } from 'stream-chat-react';
 import { ChannelMessage} from '.'
 //assets
 import { BackIcon, ChannelInfo } from '../assets';
+import { select, setShowInfo, setIsEditing, setToggleContainer } from '../redux/slices/main/mainSlice';
 
 export const GiphyContext = React.createContext({});
 
-const ChannelInner = ({ setIsEditing, setShowInfo, toggleContainer, setToggleContainer, isMobile }) => {
+const ChannelInner = () => {
   const [giphyState, setGiphyState] = useState(false);
   const { sendMessage } = useChannelActionContext();
   
 
+  
 
 
   
@@ -35,24 +39,48 @@ const ChannelInner = ({ setIsEditing, setShowInfo, toggleContainer, setToggleCon
 
   
 
-  
-  const groupingStyle=(prevMsg, msg, nxtMsg, noGrp)=>{
+  let isFirstOrSingleton = [];
+  const groupingStyle=(msg, prevMsg, nxtMsg, noGrp, one, two, three)=>{
+    // console.log("....////....", prevMsg, msg, nxtMsg, noGrp, one, two, three, "....\\\....")
     try {
       if(noGrp) return "none";
-      let prevId,msgId,nxtId
-      prevId = (prevMsg === undefined) ? false : (prevMsg?.type === "regular" ? prevMsg.created_at : prevMsg.date.id)
-      msgId = (msg === undefined) ? false : (msg?.type === "regular" ? msg.created_at : msg.date.id)
-      nxtId = (nxtMsg === undefined) ? false : (nxtMsg?.type === "regular" ? nxtMsg.created_at : nxtMsg.date.id)
-      // console.log(`msgs: ${msg}, ${prevMsg}, ${nxtMsg}, ${noGrp}`)
-      if (prevId === false){
-        return "top"
+      let prevId,msgId,nxtId,singleton,group;
+      let first, firstInGrp, middleInGrp, lastInGrp;
+      prevId = (prevMsg === undefined) ? false : (prevMsg?.type === "regular" ? prevMsg?.created_at : prevMsg?.date?.id)
+      msgId = (msg === undefined) ? false : (msg?.type === "regular" ? msg?.created_at : msg?.date?.id)
+      nxtId = (nxtMsg === undefined) ? false : (nxtMsg?.type === "regular" ? nxtMsg?.created_at : nxtMsg?.date?.id)
+      singleton = ((prevMsg?.user?.id !== msg?.user?.id) && (msg?.user?.id !== nxtMsg?.user?.id))
+      group = true||((prevMsg?.user?.id === msg?.user?.id) && (msg?.user?.id === nxtMsg?.user?.id))
+      firstInGrp = ((prevMsg?.user?.id !== msg?.user?.id) && (msg?.user?.id === nxtMsg?.user?.id))
+      middleInGrp = ((prevMsg?.user?.id === msg?.user?.id) && (msg?.user?.id === nxtMsg?.user?.id))
+      lastInGrp = ((prevMsg?.user?.id === msg?.user?.id) && (msg?.user?.id !== nxtMsg?.user?.id))
+
+      // console.log(`msgs:`, "\n prev-", prevMsg, "\n msg-", msg, "\n nxt-", nxtMsg, "\n noGrp-", noGrp, "\n")
+
+      
+      if (singleton) {
+        // console.log("single")
+
+        isFirstOrSingleton.push({id: msg.id, isSingleton: true})
+        return "single"
       }
-      if (nxtId === false) {
-        return "bottom"
-      }
-      if (prevId === msgId && msgId  === nxtId) {
-        return "middle"
-      }
+      
+        if ((!prevId && msgId) || firstInGrp){
+          // console.log("top")
+          isFirstOrSingleton.push({ id: msg.id, isFirstInGroup: true })
+          return "top"
+        }
+        if ((prevId === msgId && msgId  === nxtId) || middleInGrp) {
+          // console.log("middle")
+          return "middle"
+        }
+        if ((prevId && msgId && !nxtId) || lastInGrp) {
+          // console.log("bottom")
+          isFirstOrSingleton.push({id:msg.id, isSingleton:false})
+          return "bottom"
+        }
+      
+      
       
     } catch (error) {
       console.log(error)
@@ -192,17 +220,19 @@ const ChannelInner = ({ setIsEditing, setShowInfo, toggleContainer, setToggleCon
       </div>
     )
   }
-  
+  // MessageSimple
+
   return (
     <GiphyContext.Provider value={{ giphyState, setGiphyState }}>
       <div style={{ display: 'flex', width: '100%' }}>
         <Window>
-          <TeamChannelHeader setIsEditing={setIsEditing} setShowInfo={setShowInfo} setToggleContainer={setToggleContainer} isMobile={isMobile} />
+          <TeamChannelHeader/>
           {/* <MessageList   /> */}
           {/* groupStyles={groupingStyle} */}
-          <MessageList  Message={ (messageProps,i) => <ChannelMessage key={i} {...messageProps}  /> }  />
+          {/* <MessageList noGroupByUser={false} Message={(messageProps, i) => <MessageSimple key={i} {...messageProps} />} /> */}
+          <MessageList  noGroupByUser={false} groupStyles={groupingStyle}  Message={ (messageProps,i) => <ChannelMessage key={i} {...messageProps} keepAvtr={isFirstOrSingleton}   />}  />
           {/* <VirtualizedMessageList shouldGroupByUser={true} /> */}
-          {/* <VirtualizedMessageList shouldGroupByUser={true} Message={ (messageProps,i) => <ChannelMessage key={i} {...messageProps}  /> } /> */}
+          {/* <VirtualizedMessageList shouldGroupByUser={true} Message={(messageProps, i) => <ChannelMessage key={i} {...messageProps} keepAvtr={messageProps.firstOfGroup} /> } /> */}
           {/* Message={ (messageProps,i) => <ChannelMessage key={i} {...messageProps} /> }  */}
           
           {/* {hasChannelInvite && <ChannelInvite setChannel={setChannel} setAccept={setAccept} setReject={setReject} setInvite={setInvite}/>} */}
@@ -216,11 +246,14 @@ const ChannelInner = ({ setIsEditing, setShowInfo, toggleContainer, setToggleCon
   );
 };
 
-const TeamChannelHeader = ({ setIsEditing, setShowInfo,  setToggleContainer, isMobile  }) => {
+const TeamChannelHeader = () => {
     const { channel, watcher_count } = useChannelStateContext();
     const { client } = useChatContext();
     
-    
+    const isMobile = useSelector(select.isMobile)
+    const toggleContainer = useSelector(select.toggleContainer)
+    const showInfo = useSelector(select.showInfo)
+    const dispatch = useDispatch()
     const MessagingHeader = () => {
     
       let members = Object.values(channel.state.members).filter(({ user }) => user.id !== client.userID );
@@ -232,7 +265,7 @@ const TeamChannelHeader = ({ setIsEditing, setShowInfo,  setToggleContainer, isM
             {/* <div className="team-channel-header__channel-wrapper_left"> */}
               {
                 isMobile ?
-                <BackIcon forceleft={true} toggleAction={setToggleContainer } />
+                <BackIcon forceleft={true} toggleAction={()=> dispatch(setToggleContainer(!toggleContainer)) } />
                 :""
               }
               
@@ -263,13 +296,13 @@ const TeamChannelHeader = ({ setIsEditing, setShowInfo,  setToggleContainer, isM
           >
             {
               isMobile ?
-                <BackIcon forceleft={true} toggleAction={setToggleContainer} />
+                <BackIcon forceleft={true} toggleAction={() => dispatch(setToggleContainer(!toggleContainer))} />
                 : ""
             }
 
             <p className='team-channel-header__channel_name'># {channel.data.name}</p>
           </div>
-          <span style={{ display: 'flex' }} onClick={() => setShowInfo((prevState) => !prevState)}>
+          <span style={{ display: 'flex' }} onClick={() => dispatch(setShowInfo(!showInfo))}>
             <ChannelInfo />
           </span>
         </div>

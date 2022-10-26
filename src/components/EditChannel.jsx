@@ -83,7 +83,7 @@ const EditChannel = ({setIsEditing, excludeChannelMembers, isEditing}) => {
                 selectedUsers.forEach((user)=> userChan(user))
                 console.log('user-channels', userChannels)
 
-                // setIsEditing(false);
+                setIsEditing(false);
                 setChannelName('');
                 setSelectedUsers([]);
 
@@ -91,7 +91,7 @@ const EditChannel = ({setIsEditing, excludeChannelMembers, isEditing}) => {
             }else{
                 setSubmitError((prevState) => !prevState)
             }
-
+            
         } catch (error) {
             console.log("error", error)
             setUnclearError((prevState) => !prevState)
@@ -105,10 +105,10 @@ const EditChannel = ({setIsEditing, excludeChannelMembers, isEditing}) => {
 
     //Error handling
     const PrintSubmitError = () => {
-        var opacity = 1;  // initial opacity
-        var display = "";
-        var filter = "";
-        var errorDiv =(display, opacity,filter) => {  
+        let opacity = 1;  // initial opacity
+        let display = "";
+        let filter = "";
+        let errorDiv =(display, opacity,filter) => {  
             var timer =  setInterval(function () {
                 if (opacity <= 0.1){
                     clearInterval(timer);

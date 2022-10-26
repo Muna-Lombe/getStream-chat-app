@@ -1,47 +1,18 @@
 import React, { useState } from 'react';
 import { useChatContext, useMessageContext } from 'stream-chat-react';
-
-
-
-
+import { select, setShowInfo, setIsCreating, setIsEditing, setToggleContainer } from '../redux/slices/main/mainSlice';
 
 //components
 import { UserList, ChannelInvite, ChatError, ChannelNameInput } from '.'
 
 //assest
 import { CloseBtn } from '../assets'
+import { useDispatch } from 'react-redux';
+import { useSelector } from 'react-redux';
 
 
-// ChannelNameInput
 
-// const ChannelNameInput = ({channelName = '', setChannelName, hasError, errMsg}) => {
-//     const InvalidChatId =()=>{
-//          return (
-//              <div className="channel-name-input__wrapper__error">
-//             {hasError && <ChatError classname="InvalidChatId" errMsg={errMsg} />}
-//         </div>
-//     )};
-//     const handleChange = (event) => {
-//           event.preventDefault();  
-        
-//           setChannelName(event.target.value);
-//     };
-//     return (
-//         <div className="channel-name-input__wrapper">
-//             <div className="channel-name-input__wrapper__header">
-//                 <p>Name</p>
-//             </div>
-            
-//             <InvalidChatId />
-//             <div className="channel-name-input__wrapper__input">
-//                 <input value = {channelName} onChange={handleChange} placeholder="channel-name (no spaces)" />
-//             </div>
-            
-            
-//         </div>
-//     )
-// };
-const CreateChannel = ({createType, isCreating, setIsCreating, setToggleContainer}) => {
+const CreateChannel = (/*{createType, isCreating, setIsCreating, setToggleContainer}*/) => {
     //Setting selected user
     const {client, setActiveChannel} = useChatContext();
     const [selectedUsers, setSelectedUsers] = useState([client.userID || '']);
@@ -50,7 +21,9 @@ const CreateChannel = ({createType, isCreating, setIsCreating, setToggleContaine
     const [hasError, setHasError] = useState(false);
     const [errMsg, setErrMsg] = useState('');
  
-
+    const isCreating = useSelector(select.isCreating)
+    const createType = useSelector(select.createType)
+    const dispatch = useDispatch()
     //send CreateChannel request
     const createChannel = async(event) => {
         
@@ -108,7 +81,7 @@ const CreateChannel = ({createType, isCreating, setIsCreating, setToggleContaine
 
                 //reset fields
                 setChannelName('');
-                setIsCreating(false);
+                dispatch(setIsCreating(false));
                 setSelectedUsers([client.userID]);
                 setActiveChannel(newChannel);
 
@@ -129,7 +102,7 @@ const CreateChannel = ({createType, isCreating, setIsCreating, setToggleContaine
     const CreateChannelHeader = ()=>(
         <div className="create-channel__header">
             <p>{createType === 'team' ? 'Create a New Channel' : 'Send  Direct Message'}</p>
-            <CloseBtn setIsCreating={setIsCreating} setToggleContainer={setToggleContainer} />
+            <CloseBtn onClick={() => {dispatch(setIsCreating(false)); dispatch(setToggleContainer(true))}} />
         </div>
     )
     return (

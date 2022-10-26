@@ -22,6 +22,8 @@ import {
   ReactionIcon,
   Message,
   MessageSimple,
+  ReactionsList,
+  showMessageActionsBox,
   
 } from 'stream-chat-react';
 
@@ -30,7 +32,7 @@ import { ChannelInvite } from '.';
 import { useEffect } from 'react';
 // import './CustomMessage.scss';
 
-const ChannelMessage =  () => {
+const ChannelMessage =  ({keepAvtr}) => {
   const {
     isReactionEnabled,
     message,
@@ -43,21 +45,25 @@ const ChannelMessage =  () => {
     handleEdit,
     handleReaction,
     handleOpenThread,
-    messageListRect
+    messageListRect,
+    isMyMessage,
   } = useMessageContext();
   const { client } = useChatContext();
 //   const [reactionEnabled, setReactionEnabled] = useState(!isReactionEnabled);
-  const [isActionEnabled, setIsActionEnabled] = useState(!actionsEnabled);
+//   const [isActionEnabled, setIsActionEnabled] = useState(!actionsEnabled);
   const [inviteState, setInviteState] = useState({status:"invited", ownuser:{name:"$missing"}});
   const [channel, setChannel] = useState({id:message.channel_data?.id, name:'Apache'});
   const [invitee, setInvitee] = useState()
   const [inviteResponse, setInviteResponse] = useState(false)
 
-    
+    // console.log("keep", keepAvtr)
     
     useEffect(() => {
       if(message.isInvite){
-        updateInviteState().then(res=>res)
+        if(document.readyState === "complete"){
+            updateInviteState().then(res=>res)
+        }
+        
       }
       
     //   return setInviteResponse(false)
@@ -124,6 +130,7 @@ const ChannelMessage =  () => {
     //
     
     const memoizedMessage = useMemo(() => ({ text: message.text, chanId: channel.id, user: invitee || message.user }), [message])
+    const messageReceiver = useMemo(() => message.receiver, [message.receiver])
 
     const getChannelFromMsg = useCallback(
         async(filters) =>{
@@ -144,81 +151,78 @@ const ChannelMessage =  () => {
 
         return chan[0]
 
-    }, [message.receiver]);
+        }, [messageReceiver]);
     
 
-    // (async()=>())();
-    const updateInviteState = useCallback( () =>{
-        return (async()=>{
-            // client.user.id.toString() || client.userID.toString()
-            const filters = {
-                id: message.channel_data?.id,
-                type: message.channel_data?.type,
-                members: {
-                    $in: [
-                        (message.receiver ||
-                        client.user.id ||
-                        client.userID).toString()
-                    ]
-                }
+    const updateInviteState = useCallback( async() =>{
+        let prom = async (filters, ownuser) => {
+
+            const chan = await getChannelFromMsg(filters)
+
+            const members = chan.state.members
+            const thisUser = Object.values(members).filter((m) => m.user_id === message.receiver)[0]
+            // setInvitee({id:message.receiver, name:thisUser.user.name})
+            ownuser = thisUser
+
+
+            if (
+                (thisUser.invite_accepted_at !== undefined
+                    ||
+                    (typeof thisUser.invite_accepted_at) !== "undefined"
+                )
+
+            ) {
+
+                inviteState = "accepted"
+                setInviteState({ status: "accepted", ownuser })
+                return true
             }
-            
-            let inviteState = "invited";
-            let ownuser;
-            let prom = async () => {
+            if (
+                (thisUser.invite_rejected_at !== undefined
+                    ||
+                    (typeof thisUser.invite_rejected_at) !== "undefined"
+                )
 
-                const chan = await getChannelFromMsg(filters)
-                
-                const members = chan.state.members
-                const thisUser = Object.values(members).filter((m) => m.user_id === message.receiver)[0]
-                // setInvitee({id:message.receiver, name:thisUser.user.name})
-                ownuser = thisUser
-                
+            ) {
 
-                if (
-                    (thisUser.invite_accepted_at !== undefined
-                        ||
-                        (typeof thisUser.invite_accepted_at) !== "undefined"
-                    )
+                inviteState = "rejected"
+                setInviteState({ status: "rejected", ownuser })
 
-                ) {
-                    
-                    inviteState = "accepted"
-                    setInviteState({ status: "accepted" , ownuser})
-                    return true
-                }
-                if (
-                    (thisUser.invite_rejected_at !== undefined
-                        ||
-                        (typeof thisUser.invite_rejected_at) !== "undefined"
-                    )
-
-                ) {
-                   
-                    inviteState = "rejected"
-                    setInviteState({ status: "rejected", ownuser })
-                    
-                    return true
-                }
-                return setInviteState({ status: "invited", ownuser })
+                return true
             }
-
-
-            // Promise.resolve(prom().then(res => res)).then(res=>res)
-            
-            let resolved = await prom().then(res => true);
-
-            return (resolved === true
-                &&
-                { status: inviteState, ownuser }); 
-        })()
+            return setInviteState({ status: "invited", ownuser })
+        }
         
-    }, [message.receiver])
+        
+            
+        const filters = {
+            id: message.channel_data?.id,
+            type: message.channel_data?.type,
+            members: {
+                $in: [
+                    (message.receiver ||
+                    client.user.id ||
+                    client.userID).toString()
+                ]
+            }
+        }
+        
+        let inviteState = "invited";
+        let ownuser = '';
+        let resolved = await prom(filters, ownuser).then(res => true);
+
+        return (
+            resolved === true
+            &&
+            { status: inviteState, ownuser }
+        ); 
+        
+        
+    }, [messageReceiver])
 
     // check inviteStatus
     
     /// checking for and setting the channel
-    
     const updateChannel = //useCallback(
       async () =>{
         const doUpdate = async()=>{
@@ -251,141 +255,159 @@ const ChannelMessage =  () => {
         } catch (err) {
             return err;
         }
-        
-        
-    }//,
-    //   [channel.id],
-    // )
-
-//   console.log('isrec:', isReactionEnabled)
-//   console.log('show:', showDetailedReactions)
-//   console.log('actions ico:', ActionsIcon)
-//   console.log('message context:', useMessageContext)
-//   console.log('message invite:', message)
+    }
 
 
 
-  const openThread = useOpenThreadHandler(message,(message))
-  const messageWrapperRef = useRef(null);
 
-
+  const messageWrapperRef = useRef(null)
   const hasReactions = messageHasReactions(message);
+
   const Reactions = () =>{
     const [reactionEnabled, setReactionEnabled] = useState(!isReactionEnabled)
+    const handleOpenReactions = useCallback(() =>
+        setReactionEnabled(prevState => !prevState),
+        [isReactionEnabled],
+    )
+  
+    const ReactIconWrapper = () => (
+        <ReactIcon onClick={() => setReactionEnabled(prevState => !prevState)} />
+    )
+    const DelayedReactionSelector = ()=>(
+            <div className='message-team-reaction-icon'>
+                <ReactionSelector handleReaction={handleOpenReactions} detailedView={false} ref={reactionSelectorRef} />
+            </div>
+        )
+    
     return(
-        <div className='str-chat__message-team-actions'>
-            <ReactIcon onClick={useCallback(() =>
-                setReactionEnabled(prevState => !prevState),
-                [setReactionEnabled],
-            )
-            } />
-
-            <ReplyIcon openThread={handleOpenThread} />
-            {/* <Thread /> */}
-            {/* <ThreadIcon  /> */}
-            <MoreIcon /*setDetailedReactions={setDetailedReactions}*/ />
-
-
-            <MessageOptions
-                displayLeft={true}
-                displayReplies={true}
-                messageWrapperRef={messageWrapperRef}
-            // ActionsIcon={ActionsIcon}
-            // ReactionIcon={ReactionIcon}
-            // ThreadIcon={ThreadIcon}
-
+        <>
+            <MessageOptions 
+                messageWrapperRef={messageWrapperRef} 
+                
+                // ActionsIcon={MoreIcon}
+                // ReactionIcon={ReactIconWrapper}
+                // ThreadIcon={ReplyIcon}
             />
-
-            {reactionEnabled && (
-                <div className='message-team-reaction-icon'>
-                    <ReactionSelector ref={reactionSelectorRef} />
-                </div>
-            )}
-
-        </div>
+            {/* <DelayedReactionSelector /> */}
+            {showDetailedReactions && <ReactionSelector detailedView={false} />}
+        </>
+        
     )
   }
-  const CustomMessage = ()=>{
-    return(
-    <div className='str-chat__message-team str-chat__message-team--top str-chat__message-team--regular  str-chat__message-team--received'>
-        <div className='str-chat__message-team-meta'>
-        
-            <Avatar image={message.user?.image} name={message.user?.name} />
-            <div className='message-header-timestamp'>
-                <MessageTimestamp />
-            </div>
+  const CustomMessage = ({keepAvtr})=>{
+    const Usrname = () => (
+        <div className={'str-chat__message-team-author'}>
+            {message.user?.name}
         </div>
-      
-        <div className='str-chat__message-team-group'>
-            
-            <div className='str-chat__message-team-author'>
-                {message.user?.name}
-            </div>
+    )
+    const Timestamp = () => (
+        <div className='str-chat__message-header-timestamp'>
+            <MessageTimestamp />
+        </div>    
+    )
+    const AvtrComp  =()=> (
+        <div className='str-chat__message-team-meta'>
+            {
+                keepAvtr.some((el) => el.id === message.id && !el.isFirstInGroup ) ? 
+                <>
+                    <Avatar image={message.user?.image} name={message.user?.name} />
+                    <Usrname />
+                    
+                </>
+                :""
 
-            <Reactions/>
+            }
             
-            <div className='str-chat__message-team-content str-chat__message-team-content--top str-chat__message-team-content--text'>
+            
+        </div>
+    )
+    const MsgComp =()=>{
+        return (
+            <div className={'str-chat__message-team-group' + (isMyMessage() ? ' align-right' : ' ')}>
+
                 {
-                    message.isInvite ?
-                    <ChannelInvite 
-                    message={memoizedMessage} 
-                    acceptInvite={acceptInvite} 
-                    rejectInvite={rejectInvite} 
-                    isReceiver={message.receiver === client.user?.id} 
-                    inviteState={ inviteState} 
-                    /*inviteState={()=>("invited")}*/ 
-                    /> 
+                    keepAvtr.some((el) => (el.id === message.id && el.isFirstInGroup) || (el.id === message.id && el.isSingleton)) 
+                    ? 
+                    <Timestamp /> : ''
+                }
 
-                    : <RegularMessage/> 
-                } 
+                <Reactions />
 
-                <div className='str-chat__message-team--received'>
-                    <MessageStatus />
+                <div className={'str-chat__message-team-content str-chat__message-team-content--top str-chat__message-team-content--text'+(isMyMessage() ? ' align-invite-right' : '')}>
+                    {
+                        message.isInvite ?
+                            <ChannelInvite
+                                message={memoizedMessage}
+                                acceptInvite={acceptInvite}
+                                rejectInvite={rejectInvite}
+                                isReceiver={message.receiver === client.user?.id}
+                                inviteState={inviteState}
+                                // isMyMsg={isMyMessage}
+                            /*inviteState={()=>("invited")}*/
+                            />
+
+                            : <RegularMessage />
+                    }
+
+                    
                 </div>
             </div>
+    )}
+    const MsgAvtr = () => (
+        <>
+            <AvtrComp />
+            <MsgComp />
+        </>
+    )
+    const MsgAvtrReversed = () => (
+        <>
+            <MsgComp />
+            <AvtrComp /> 
+        </>
 
+    )
+    const MsgAvtrComp = () => {
+        return (
             
-            
-            
-
-            {/* <div className='str-chat__message-team-actions'>
-                <MessageOptions displayLeft={false} messageWrapperRef={messageWrapperRef} />
-            </div> */}
-            
-            
-            
-            
+            isMyMessage() ?
+                <MsgAvtrReversed/>
+                :<MsgAvtr/>
+        )
+    }
+    return(
+        <div className={'str-chat__message-team str-chat__message-team--top str-chat__message-team--regular  str-chat__message-team--received' + (!keepAvtr.some((el) => el.id === message.id) ? " in-group" : "") + (keepAvtr.some((el) => el.id === message.id && el.isFirstInGroup) ? " first-in-group" : "") + (keepAvtr.some((el) => el.id === message.id && !el.isFirstInGroup) ? " last-in-group" : "")}>
+        <MsgAvtrComp/>
+        <div className={'str-chat__message-team--received'}>
+            <MessageStatus />
         </div>
-
-
-        
     </div>
     )
   }
   const RegularMessage = () => {
+    const alignRightClass = `str-chat__message-text-inner${(isMyMessage() ? "--align-right" : "")} str-chat__message-simple-text-inner${(isMyMessage() ? "--align-right" : "") }`;
+
     return(
         <>
-            <MessageText />
+            <MessageText customInnerClass={alignRightClass}  />
             {message.attachments && <Attachment attachments={message.attachments} />}
             {/* displays a reaction that has already been added */}
-            {hasReactions && !showDetailedReactions && isReactionEnabled && <SimpleReactionsList />}
-            {/* {isActionEnabled && <MessageActions />} */}
-            {/* <Thread  /> */}
-            <MessageRepliesCountButton reply_count={message.reply_count} />
+            {hasReactions && 
+                !showDetailedReactions && 
+                isReactionEnabled && 
+                <SimpleReactionsList/>
+            }
+            
+            <MessageRepliesCountButton  onClick={handleOpenThread} reply_count={message.reply_count} />
             {/* <MessageSimple /> */}
         </>
     )
   }
 
   
-    
+
   return (
         
-    
-    //    message.isInvite
-            // ? <ChannelInvite message={{ text: message.text, chanId: channel.id, user: message.user }} isInviter={message.receiver === client.user?.id} acceptInvite={acceptInvite} rejectInvite={rejectInvite} />
-
-            <CustomMessage /> //<RegularMessage />
+            <CustomMessage keepAvtr={keepAvtr}/> //<RegularMessage />
        
   );
 };

@@ -1,13 +1,21 @@
 import React, { useState } from 'react'
 import { Channel, useChatContext, MessageTeam } from 'stream-chat-react'
+import { select, setShowInfo, setIsCreating, setIsEditing, setToggleContainer } from '../redux/slices/main/mainSlice';
 
 import {ChannelInner, CreateChannel, ChannelInfo} from '.'
+import { useSelector } from 'react-redux';
 
-const ChannelContainer = ({ isCreating, setIsCreating, createType, isEditing, setIsEditing, showInfo, setShowInfo, toggleContainer, setToggleContainer, isMobile }) => {
+const ChannelContainer = (/*{ isCreating, setIsCreating, createType, isEditing, setIsEditing, showInfo, setShowInfo, toggleContainer, setToggleContainer, isMobile }*/) => {
     const { channel,client } = useChatContext();
 
 
-    
+    const isCreating = useSelector(select.isCreating)
+    const isEditing = useSelector(select.isEditing)
+    const showInfo = useSelector(select.showInfo)
+    const toggleContainer = useSelector(select.toggleContainer)
+    const isMobile = useSelector(select.isMobile)
+    const createType = useSelector(select.createType)
+
     if (isCreating){
         return(
             <div className="channel__container">
@@ -25,7 +33,7 @@ const ChannelContainer = ({ isCreating, setIsCreating, createType, isEditing, se
     if (showInfo){
         return(
             <div className="channel__container">
-                <ChannelInfo isEditing={isEditing} setIsEditing={setIsEditing}  setShowInfo={setShowInfo}/>
+                <ChannelInfo />
             </div>
             
         )
@@ -47,13 +55,7 @@ const ChannelContainer = ({ isCreating, setIsCreating, createType, isEditing, se
                 Message={ (messageProps,i) => <MessageTeam key={i} {...messageProps} /> }
            
            >
-            <ChannelInner 
-               setIsEditing={setIsEditing} 
-               setShowInfo={setShowInfo}
-               setToggleContainer={setToggleContainer}
-               toggleContainer={toggleContainer}
-               isMobile={isMobile}
-            />
+            <ChannelInner/>
                
            </Channel>
         </div>

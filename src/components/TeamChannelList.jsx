@@ -1,8 +1,15 @@
 import React from 'react'
+import { useDispatch } from 'react-redux';
+import { useSelector } from 'react-redux';
 
 import {AddChannel} from '../assets'
+import { setIsCreating, setIsEditing, setToggleContainer, setCreateType, select } from '../redux/slices/main/mainSlice';
 
-const TeamChannelList = ({children, setToggleContainer, error=false, loading, type, isCreating, setIsCreating, setCreateType, setIsEditing}) => {
+const TeamChannelList = ({children,  error=false, loading, type,}) => {
+    const isCreating = useSelector(select.isCreating)
+    const isEditing = useSelector(select.isEditing)
+    const toggleContainer = useSelector(select.toggleContainer)
+   const dispatch = useDispatch()
     if(error){
         console.log(error)
         return type === 'team' ? (
@@ -35,10 +42,10 @@ const TeamChannelList = ({children, setToggleContainer, error=false, loading, ty
                 <AddChannel
                     type = {type === 'team' ? 'team' : 'messaging'}
                     isCreating={isCreating}
-                    setIsCreating={setIsCreating}
-                    setCreateType={setCreateType}
-                    setIsEditing={setIsEditing}
-                    setToggleContainer={setToggleContainer}
+                    setIsCreating={() => dispatch(setIsCreating(!isCreating))}
+                    setCreateType={() => dispatch(setCreateType(type))}
+                    setIsEditing={() => dispatch(setIsEditing(!isEditing))}
+                    setToggleContainer={() => dispatch(setToggleContainer(!toggleContainer))}
 
                 />
             </div>
