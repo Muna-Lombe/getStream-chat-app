@@ -1942,8 +1942,13 @@
     color: #858688;
     margin-left: 4px;
   }
-  
+  .str-chat__message-team .str-chat__reaction-selector{
+    top: -60px;
+    left: inherit;
+    right: initial;
+  }
   .str-chat__reaction-selector {
+    
     background: #ffffff;
     border: 1px solid #e9e9ea;
     box-sizing: border-box;

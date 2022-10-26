@@ -273,15 +273,12 @@ const ChannelMessage =  ({keepAvtr}) => {
     const ReactIconWrapper = () => (
         <ReactIcon onClick={() => setReactionEnabled(prevState => !prevState)} />
     )
-    const DelayedReactionSelector = ()=>{
-        setTimeout(() => {
-        }, 5000)
-        return(
+    const DelayedReactionSelector = ()=>(
             <div className='message-team-reaction-icon'>
-                <ReactionSelector detailedView={false} ref={null} />
+                <ReactionSelector handleReaction={handleOpenReactions} detailedView={false} ref={reactionSelectorRef} />
             </div>
         )
-    }
+    
     return(
         <>
             <MessageOptions 
@@ -292,7 +289,7 @@ const ChannelMessage =  ({keepAvtr}) => {
                 // ThreadIcon={ReplyIcon}
             />
             {/* <DelayedReactionSelector /> */}
-            {reactionEnabled && <DelayedReactionSelector />}
+            {showDetailedReactions && <ReactionSelector detailedView={false} />}
         </>
         
     )
