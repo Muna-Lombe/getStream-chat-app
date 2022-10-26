@@ -20,11 +20,6 @@ const Sidebar = ({setToggleContainer, logout, isMobile, children, setToggleDark}
             &&
             children
         }
-        {/* <div className="channel-list__sidebar__icon3">
-            <div className="icon1__inner" onClick={logout}>
-                Chat
-            </div>
-        </div> */}
     </div>
 );
 
@@ -182,6 +177,8 @@ const ChannelListContainer = (/*{ setCreateType, setIsCreating, setIsEditing, se
     // Empty array ensures that effect is only run on mount
     const isMobile = useSelector(select.isMobile)
     const toggleContainer = useSelector(select.toggleContainer)
+    const isCreating = useSelector(select.isCreating)
+    const isEditing = useSelector(select.isEditing)
     const dispatch = useDispatch()
     useEffect(() => {
         function handleDelayedRender(){
@@ -203,7 +200,7 @@ const ChannelListContainer = (/*{ setCreateType, setIsCreating, setIsEditing, se
                 isMobile ?
                 (
                     <div className="channel-list__container-responsive" 
-                            style={{ left: toggleContainer ? "0%" : "-100%" }}
+                            style={{ left: (toggleContainer && (!isCreating || !isEditing)) ? "0%":"-100%"   }}
                             // style={{left: "0%", backgroundColor: "#005fff"}}
                     >
                         {/* <div className="channel-list__container-toggle" onClick={() => setToggleContainer((prevToggleContainer) => !prevToggleContainer)} /> */}

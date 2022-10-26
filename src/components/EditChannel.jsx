@@ -73,11 +73,6 @@ const EditChannel = ({setIsEditing, excludeChannelMembers, isEditing}) => {
                             channel_data: {type: channel?.type, id: channel?.id},
                             receiver:userId
                         })
-                    // chan.sendMessage({ 
-                    //     text: `You were invited to join the channel #${channelName} `, 
-                    //     receiver: userId
-                    // })
-                    // console.log('id: ',chan?.id)
                     
                     setUserChannels((prevChans) => [...prevChans, chat])
                     // chat.stopWatching()
@@ -103,6 +98,7 @@ const EditChannel = ({setIsEditing, excludeChannelMembers, isEditing}) => {
             setErrMsg(error.message)
             setHasError(true)
         }
+        isEditing && setIsEditing(prevState => !prevState)
 
     };
 

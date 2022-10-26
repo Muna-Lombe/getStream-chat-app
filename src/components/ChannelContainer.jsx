@@ -24,6 +24,7 @@ const ChannelContainer = (/*{ isCreating, setIsCreating, createType, isEditing, 
                     createType = {createType}
                     setIsCreating = {setIsCreating}
                     setToggleContainer={setToggleContainer}
+                    isMobile={isMobile}
                  />
             </div>
         )

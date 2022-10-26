@@ -152,34 +152,14 @@ const UserList = ({setSelectedUsers, activeChannelMembers, excludeChannelMembers
                         filteredUsers = response.users.filter((user) => {
                             return !excludeChannelMembers.some((member) => member.id === user.id)
                         })
-                        
-                        //////////////////////////////////
-                        // filteredUsers = response.users.map((user) => {
-                        //     // console.log("bo status:", excludeChannelMembers)
-                        //     let userHas =  [...excludeChannelMembers].find((member)=>{return member.id === user.id}) || {joinedStatus:"not Invited"}
-                        //     // console.log("status", userHas.joinedStatus)
-                        //     return {...user, joinedStatus: userHas.joinedStatus }
-                        // })
-                        //////////////////////////////////
-                        //!(excludeChannelMembers.find((member)=>member.id === user.id)))
-                        // filteredUsers = response.users
-                        // console.log("using",response.users,"exfiltered users from", excludeChannelMembers, "to", filteredUsers)
                     }
 
-                  
+                    console.log("respnse users", response)
                     setUsers(filteredUsers || response.users);
                     // console.log("usrs", users, filteredUsers)
                 }else {
                     setListEmpty(true);
                 }
-                
-                //filter out existing channel members
-                // if(activeChannelMembers){
-                //     console.log("active channel members: ", activeChannelMembers);
-                // }
-                
-
-                
             } catch (error) {
                 console.error("catch error", error)
                 setError(true);
