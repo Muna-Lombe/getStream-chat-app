@@ -1,24 +1,24 @@
 {
   "files": {
-    "main.css": "/getStream-client/static/css/main.2977d940.css",
-    "main.js": "/getStream-client/static/js/main.86085b9f.js",
-    "static/js/913.1dd91ac5.chunk.js": "/getStream-client/static/js/913.1dd91ac5.chunk.js",
-    "static/js/581.46dd8b36.chunk.js": "/getStream-client/static/js/581.46dd8b36.chunk.js",
-    "static/js/717.fd776f4e.chunk.js": "/getStream-client/static/js/717.fd776f4e.chunk.js",
-    "static/js/829.cab8bb92.chunk.js": "/getStream-client/static/js/829.cab8bb92.chunk.js",
-    "static/media/EmojiOneColor.woff2": "/getStream-client/static/media/EmojiOneColor.90ee5fb894c8d349bc54.woff2",
-    "static/media/NotoColorEmoji-flags.woff2": "/getStream-client/static/media/NotoColorEmoji-flags.148141acfb7ce6e4f383.woff2",
-    "static/media/signup.jpg": "/getStream-client/static/media/signup.f535f5e21204d29d2009.jpg",
-    "index.html": "/getStream-client/index.html",
-    "main.2977d940.css.map": "/getStream-client/static/css/main.2977d940.css.map",
-    "main.86085b9f.js.map": "/getStream-client/static/js/main.86085b9f.js.map",
-    "913.1dd91ac5.chunk.js.map": "/getStream-client/static/js/913.1dd91ac5.chunk.js.map",
-    "581.46dd8b36.chunk.js.map": "/getStream-client/static/js/581.46dd8b36.chunk.js.map",
-    "717.fd776f4e.chunk.js.map": "/getStream-client/static/js/717.fd776f4e.chunk.js.map",
-    "829.cab8bb92.chunk.js.map": "/getStream-client/static/js/829.cab8bb92.chunk.js.map"
+    "main.css": "/getStream-chat-app/static/css/main.37960be7.css",
+    "main.js": "/getStream-chat-app/static/js/main.ea0ce9da.js",
+    "static/js/913.1dd91ac5.chunk.js": "/getStream-chat-app/static/js/913.1dd91ac5.chunk.js",
+    "static/js/581.46dd8b36.chunk.js": "/getStream-chat-app/static/js/581.46dd8b36.chunk.js",
+    "static/js/717.fd776f4e.chunk.js": "/getStream-chat-app/static/js/717.fd776f4e.chunk.js",
+    "static/js/829.cab8bb92.chunk.js": "/getStream-chat-app/static/js/829.cab8bb92.chunk.js",
+    "static/media/EmojiOneColor.woff2": "/getStream-chat-app/static/media/EmojiOneColor.90ee5fb894c8d349bc54.woff2",
+    "static/media/NotoColorEmoji-flags.woff2": "/getStream-chat-app/static/media/NotoColorEmoji-flags.148141acfb7ce6e4f383.woff2",
+    "static/media/signup.jpg": "/getStream-chat-app/static/media/signup.f535f5e21204d29d2009.jpg",
+    "index.html": "/getStream-chat-app/index.html",
+    "main.37960be7.css.map": "/getStream-chat-app/static/css/main.37960be7.css.map",
+    "main.ea0ce9da.js.map": "/getStream-chat-app/static/js/main.ea0ce9da.js.map",
+    "913.1dd91ac5.chunk.js.map": "/getStream-chat-app/static/js/913.1dd91ac5.chunk.js.map",
+    "581.46dd8b36.chunk.js.map": "/getStream-chat-app/static/js/581.46dd8b36.chunk.js.map",
+    "717.fd776f4e.chunk.js.map": "/getStream-chat-app/static/js/717.fd776f4e.chunk.js.map",
+    "829.cab8bb92.chunk.js.map": "/getStream-chat-app/static/js/829.cab8bb92.chunk.js.map"
   },
   "entrypoints": [
-    "static/css/main.2977d940.css",
-    "static/js/main.86085b9f.js"
+    "static/css/main.37960be7.css",
+    "static/js/main.ea0ce9da.js"
   ]
 }
