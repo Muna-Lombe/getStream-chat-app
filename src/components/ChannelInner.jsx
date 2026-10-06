@@ -1,21 +1,20 @@
 import React, { useState } from 'react';
+import { useEffect, useMemo } from 'react';
 import { useSelector } from 'react-redux';
 import { useDispatch } from 'react-redux';
 import { MessageList, MessageInput, Thread, Window, useChannelActionContext, Avatar, useChannelStateContext, useChatContext, VirtualizedMessageList, MessageInputFlat, MessageInputSmall, MessageInputContextProvider, MessageSimple } from 'stream-chat-react';
 import { ChannelMessage} from '.'
 //assets
 import { BackIcon, ChannelInfo } from '../assets';
-import { select, setShowInfo, setIsEditing, setToggleContainer } from '../redux/slices/main/mainSlice';
+import { select, setShowInfo, setChannelhasContent, setToggleContainer } from '../redux/slices/main/mainSlice';
 
 export const GiphyContext = React.createContext({});
 
 const ChannelInner = () => {
   const [giphyState, setGiphyState] = useState(false);
   const { sendMessage } = useChannelActionContext();
-  
-
-  
-
+  const dispatch = useDispatch()
+  const channelHasContent = useSelector(select.channelHasContent)
 
   
   const overrideSubmitHandler = (message) => {
@@ -265,7 +264,7 @@ const TeamChannelHeader = () => {
             {/* <div className="team-channel-header__channel-wrapper_left"> */}
               {
                 isMobile ?
-                <BackIcon forceleft={true} toggleAction={()=> dispatch(setToggleContainer(!toggleContainer)) } />
+                <BackIcon forceleft={true} toggleAction={()=> dispatch(setToggleContainer({state:!toggleContainer})) } />
                 :""
               }
               
@@ -296,13 +295,13 @@ const TeamChannelHeader = () => {
           >
             {
               isMobile ?
-                <BackIcon forceleft={true} toggleAction={() => dispatch(setToggleContainer(!toggleContainer))} />
+                <BackIcon forceleft={true} toggleAction={() => dispatch(setToggleContainer({state:!toggleContainer}))} />
                 : ""
             }
 
             <p className='team-channel-header__channel_name'># {channel.data.name}</p>
           </div>
-          <span style={{ display: 'flex' }} onClick={() => dispatch(setShowInfo(!showInfo))}>
+          <span style={{ display: 'flex' }} onClick={() => dispatch(setShowInfo({state:!showInfo}))}>
             <ChannelInfo />
           </span>
         </div>

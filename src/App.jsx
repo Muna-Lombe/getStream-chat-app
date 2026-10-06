@@ -43,13 +43,7 @@ if (authToken && !client._hasConnectionID()){
 }
 
 const App = () => {
-    // const [createType, setCreateType] = useState('');
-    // const [isCreating, setIsCreating] = useState(false);
-    // const [isEditing, setIsEditing] = useState(false);
-    // const [showInfo, setShowInfo] = useState(false);
-    // const [toggleDark, setToggleDark] = useState(false)
-    // const [toggleContainer, setToggleContainer] = useState(true)
-    const [isMobile, setMobile] = useState((window.innerWidth <= 960))
+    const [isMobile, setMobile] = useState(false)
     
     const dispatch  = useDispatch()
     
@@ -58,6 +52,7 @@ const App = () => {
     useEffect(() => {
         
         function handleResize() {
+            
             setMobile((window.innerWidth <= 960))
             // dispatch(setIsMobile((isMobile)))
         }
@@ -71,7 +66,8 @@ const App = () => {
     
     //Updates mobile status only on value difference
     (useCallback(()=>{
-        let action = setIsMobile({ isMobile })
+        console.log("changing to mobile", window.innerWidth)
+        let action = setIsMobile({ state: isMobile || window.innerWidth <= 960 })
         dispatch(action)
     }, [isMobile]))()
 

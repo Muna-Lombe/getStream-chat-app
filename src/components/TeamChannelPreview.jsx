@@ -1,7 +1,7 @@
 import React from 'react'
 import { useDispatch } from 'react-redux';
 import { Avatar, useChatContext } from 'stream-chat-react'
-import { setIsCreating, setIsEditing, setToggleContainer } from '../redux/slices/main/mainSlice';
+import { setChannelhasContent, setIsCreating, setIsEditing, setToggleContainer } from '../redux/slices/main/mainSlice';
 
 
 const TeamChannelPreview = ({setActiveChannel,  channel, type}) => {
@@ -44,11 +44,12 @@ const TeamChannelPreview = ({setActiveChannel,  channel, type}) => {
             }
             onClick={() =>{
                 setActiveChannel(channel)
-                dispatch(setIsCreating(false));
-                dispatch(setIsEditing(false));
+                dispatch(setIsCreating({state:false}));
+                dispatch(setIsEditing({ state: false }));
+                dispatch(setChannelhasContent({ state: activeChannel ? true : false }));
                 
                 if(setToggleContainer){
-                    dispatch(setToggleContainer(false))
+                    dispatch(setToggleContainer({state:false}))
                 }
             }}
 

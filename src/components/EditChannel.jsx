@@ -1,25 +1,9 @@
-import axios from 'axios';
+
 import React, {useState} from 'react'
 import { useChatContext } from 'stream-chat-react'
 
 import { UserList, ChannelInvite ,ChannelNameInput} from "."
 
-
-// const ChannelNameInput = ({channelName = '', setChannelName}) => {
-    
-
-//     const handleChange = (event) => {
-//           event.preventDefault();  
-        
-//           setChannelName(event.target.value);
-//     };
-//     return (
-//         <div className="channel-name-input__wrapper">
-//            <p>Name</p>
-//            <input value = {channelName} onChange={handleChange} placeholder="channel-name (no spaces)" />
-//         </div>
-//     )
-// };
 
 const EditChannel = ({setIsEditing, excludeChannelMembers, isEditing}) => {
     const { channel,client} = useChatContext();

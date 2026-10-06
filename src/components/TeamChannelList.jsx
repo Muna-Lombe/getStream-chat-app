@@ -41,11 +41,9 @@ const TeamChannelList = ({children,  error=false, loading, type,}) => {
                 </p>
                 <AddChannel
                     type = {type === 'team' ? 'team' : 'messaging'}
-                    isCreating={isCreating}
-                    setIsCreating={() => dispatch(setIsCreating(!isCreating))}
-                    setCreateType={() => dispatch(setCreateType(type))}
-                    setIsEditing={() => dispatch(setIsEditing(!isEditing))}
-                    setToggleContainer={() => dispatch(setToggleContainer(!toggleContainer))}
+                    setIsCreating={() => dispatch(setIsCreating({state:true}))}
+                    setCreateType={() => dispatch(setCreateType({state:type}))}
+                    setToggleContainer={() => dispatch(setToggleContainer({state:!toggleContainer}))}
 
                 />
             </div>

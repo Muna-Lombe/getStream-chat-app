@@ -12,7 +12,7 @@ import { select, setCreateType, setIsCreating, setIsEditing, setToggleContainer,
 const Sidebar = ({setToggleContainer, logout, isMobile, children, setToggleDark}) => (
     <div className={"channel-list__sidebar"+(isMobile ? "__mobile" : "")}>
         
-        <HospitalIcon onClick={() => setToggleContainer(prevState => !prevState)} size={isMobile ? {w:32,h:32}: false}/>
+        <HospitalIcon onClick={setToggleContainer} size={isMobile ? {w:32,h:32}: false}/>
         <LogoutIcon size={isMobile ? {w:32,h:32}: false}/>
 
         {
@@ -50,7 +50,7 @@ const customChannelMessagingFilter=(channels) => {
 }
 
                             
-const ChannelListContent = ({isMobile}) => {
+const ChannelListContent = ({isMobile, dispatch}) => {
     const { client } = useChatContext();
 
    
@@ -66,11 +66,11 @@ const ChannelListContent = ({isMobile}) => {
         )
         return(
             <>
-                <Sidebar setToggleContainer={setToggleContainer} setToggleDark={setToggleDark} children={children} isMobile={isMobile} />
+                <Sidebar setToggleContainer={()=> dispatch(setToggleContainer({state:true}))} setToggleDark={()=>dispatch(setToggleDark({state:true}))} children={children} isMobile={isMobile} />
                 <div className={"channel-list__list__wrapper"}>
                     <div style={{ width: '100%' }}>
                         <CompanyHeader />
-                        <ChannelSearch setToggleContainer={setToggleContainer} />
+                        <ChannelSearch setToggleContainer={() => dispatch(setToggleContainer({state:true}))} />
                         {/* teams channels */}
                         <ChannelList
                             filters={filters}
@@ -116,11 +116,11 @@ const ChannelListContent = ({isMobile}) => {
     }
     return (
         <>
-            <Sidebar setToggleContainer={setToggleContainer} />
+            <Sidebar setToggleContainer={() => dispatch(setToggleContainer({state:true}))} setToggleDark={() => dispatch(setToggleDark({state:true}))}  />
             <div className={"channel-list__list__wrapper"}>
                 <div style={{width:'100%'}}>
                     <CompanyHeader />
-                    <ChannelSearch setToggleContainer={setToggleContainer} />
+                    <ChannelSearch setToggleContainer={() => dispatch(setToggleContainer({state:true}))} />
                     {/* teams channels */}
                     <ChannelList 
                         filters={filters}
@@ -179,25 +179,37 @@ const ChannelListContainer = (/*{ setCreateType, setIsCreating, setIsEditing, se
     const toggleContainer = useSelector(select.toggleContainer)
     const isCreating = useSelector(select.isCreating)
     const isEditing = useSelector(select.isEditing)
-    const dispatch = useDispatch()
-    useEffect(() => {
-        function handleDelayedRender(){
-            let waitToRender = setTimeout(() => {
-                if(document.readyState === "complete"){
-                    clearTimeout(waitToRender)
-                }
-            }, 300);
+    const channelHasContent = useSelector(select.channelHasContent)
+    const waitBeforeRender = () => {
+        var st = setTimeout(() => {
+            
+        }, 1000)
+        clearTimeout(st)
+
+        return {
+            isMobile,
+            channelHasContent
         }
+    };
+    const dispatch = useDispatch()
+    // useEffect(() => {
+    //     function handleDelayedRender(){
+    //         let waitToRender = setTimeout(() => {
+    //             if(document.readyState === "complete"){
+    //                 clearTimeout(waitToRender)
+    //             }
+    //         }, 300);
+    //     }
         
-        document.addEventListener("readystatechange", handleDelayedRender);
-        return document.removeEventListener("readystatechange", handleDelayedRender)
-    }, [])
+    //     document.addEventListener("readystatechange", handleDelayedRender);
+    //     return document.removeEventListener("readystatechange", handleDelayedRender)
+    // }, [])
     
-    console.log("isMobile", isMobile)
+    console.log("isMobile", isMobile,"\nhasContent", channelHasContent)
     return(
         <> 
             {
-                isMobile ?
+                waitBeforeRender().isMobile ?
                 (
                     <div className="channel-list__container-responsive" 
                             style={{ left: (toggleContainer && (!isCreating || !isEditing)) ? "0%":"-100%"   }}
@@ -207,16 +219,16 @@ const ChannelListContainer = (/*{ setCreateType, setIsCreating, setIsEditing, se
                         <div className="channel-list__container-responsive__mask"
                         // style={{ left: toggleContainer ? "0%" : "-100%", backgroundColor: "#ffff", border: "1px solid rgb(120 117 117 / 47 %)" }}
                         >
-                            <ChannelListContent isMobile={isMobile}/>
+                            <ChannelListContent isMobile={waitBeforeRender().isMobile} dispatch={dispatch}/>
                         </div>
-                        <div className="channel-list__container-responsive__clickable-space" onClick={() => (toggleContainer ? dispatch(setToggleContainer(false)) : "")}>
+                        <div className="channel-list__container-responsive__clickable-space" onClick={() => (toggleContainer && channelHasContent ? dispatch(setToggleContainer(false)) : "")}>
 
                         </div>
                     </div>
                 )
                 : (
                     <div className="channel-list__container">
-                        <ChannelListContent/>
+                            <ChannelListContent dispatch={dispatch} />
                     </div>
                 )
             }

@@ -3,6 +3,7 @@ import React from 'react'
 
 
 const mainAdapter = createEntityAdapter()
+
 const initialState = mainAdapter.getInitialState({
     entities:{
         createType: '',
@@ -11,7 +12,8 @@ const initialState = mainAdapter.getInitialState({
         showInfo: false,
         toggleDark: false,
         toggleContainer: true,
-        isMobile: false
+        isMobile: false,
+        channelHasContent: false
     }
     
 })
@@ -24,43 +26,48 @@ const mainSlice = createSlice({
     reducers: {
         setCreateType(state,action) {
             console.log('newState', state.ids)
-            const newCreateType = action.payload
-            state.entities['createType'] = newCreateType
+            const oldEntityState = state.entities['createType']
+            state.entities['createType'] = action.payload.state //|| !oldEntityState
+
         },
         setIsCreating(state,action) {
             console.log('newState', state.ids)
-            const newIsCreating = action.payload
-            state.entities['isCreating'] = newIsCreating
+            const oldEntityState = state.entities['isCreating']
+            state.entities['isCreating'] = action.payload.state //|| !oldEntityState
         },
         setIsEditing(state,action) {
             console.log('newState', state.ids)
-            const newIsEditing = action.payload
-            state.entities['isEditing'] = newIsEditing
+            const oldEntityState = state.entities['isEditing']
+            state.entities['isEditing'] = action.payload.state //|| !oldEntityState
         },
         setShowInfo(state,action) {
             console.log('newState', state.ids)
-            const newShowInfo = action.payload
-            state.entities['showInfo']= newShowInfo
+            const oldEntityState = state.entities['showInfo']
+            state.entities['showInfo'] = action.payload.state //|| !oldEntityState
         },
         setToggleDark(state,action) {
             console.log('newState', state.ids)
-            const newToggleDark = action.payload
-            state.entities['toggleDark'] = newToggleDark
+            const oldEntityState = state.entities['toggleDark']
+            state.entities['toggleDark'] = action.payload.state //|| !oldEntityState
         },
         setToggleContainer(state,action) {
             console.log('newState', state.ids)
-            const newToggleContainer = action.payload
-            state.entities['toggleContainer'] = newToggleContainer
+            const oldEntityState = state.entities['toggleContainer']
+            state.entities['toggleContainer'] = action.payload.state //|| !oldEntityState
         },
         setIsMobile(state,action) {
-            const newIsMobile = action.payload.isMobile
-            state.entities['isMobile'] = newIsMobile
+            const oldEntityState = state.entities['isMobile']
+            state.entities['isMobile'] = action.payload.state //|| !oldEntityState
             
         },
+        setChannelhasContent( state, action) {
+            const oldEntityState = state.entities['channelHasContent']
+            state.entities['channelHasContent'] = action.payload.state //|| !oldEntityState
+        }
     },
     
 }) 
-export const { setCreateType,setIsCreating,setIsEditing,setShowInfo,setToggleContainer,setToggleDark, setIsMobile} = mainSlice.actions
+export const { setCreateType,setIsCreating,setIsEditing,setShowInfo,setToggleContainer,setToggleDark, setIsMobile, setChannelhasContent} = mainSlice.actions
 export const { selectEntities: selectMainEntities,  } = mainAdapter.getSelectors(state => state.main)
 const selector =(name) => createSelector(
         selectMainEntities,
@@ -77,6 +84,7 @@ export const select ={
     toggleDark: selector('toggleDark'),
     toggleContainer: selector('toggleContainer'),
     isMobile: selector('isMobile'),
+    channelHasContent: selector('channelHasContent')
     // all: (function (){
     //     return ['setCreateType', 'setIsCreating', 'setIsEditing', 'setToggleDark', 'toggleContainer', 'setToggleContainer', 'isMobile'].map(k=>{
     //         return selector(k)

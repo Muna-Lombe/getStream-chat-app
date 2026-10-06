@@ -6,11 +6,14 @@ import { Provider } from 'react-redux';
 // ChatProvider
 import App from './App'
 import reduxStore from './redux/store';
-
-ReactDom.render(
+import SelectUser from './selectUser/SelectUser';
+const ReduxWrappedApp = ()=>(
   <Provider store={reduxStore}>
     <App/>
-  </Provider >,
-
+  </Provider >
+)
+ReactDom.render(
+  <ReduxWrappedApp/>,
+  // <SelectUser/>,
 document.getElementById('root'));
 

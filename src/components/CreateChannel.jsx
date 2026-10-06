@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useChatContext, useMessageContext } from 'stream-chat-react';
-import { select, setShowInfo, setIsCreating, setIsEditing, setToggleContainer } from '../redux/slices/main/mainSlice';
+import { select,setIsCreating, setToggleContainer } from '../redux/slices/main/mainSlice';
 
 //components
 import { UserList, ChannelInvite, ChatError, ChannelNameInput } from '.'
@@ -81,7 +81,7 @@ const CreateChannel = (/*{createType, isCreating, setIsCreating, setToggleContai
 
                 //reset fields
                 setChannelName('');
-                dispatch(setIsCreating(false));
+                dispatch(setIsCreating({ state: false }));
                 setSelectedUsers([client.userID]);
                 setActiveChannel(newChannel);
 
@@ -96,13 +96,13 @@ const CreateChannel = (/*{createType, isCreating, setIsCreating, setToggleContai
             
             
         }
-        setToggleContainer(prevState => !prevState)
+        dispatch(setToggleContainer({ state: true }))
     };
     
     const CreateChannelHeader = ()=>(
         <div className="create-channel__header">
             <p>{createType === 'team' ? 'Create a New Channel' : 'Send  Direct Message'}</p>
-            <CloseBtn onClick={() => {dispatch(setIsCreating(false)); dispatch(setToggleContainer(true))}} />
+            <CloseBtn onClick={() => { dispatch(setIsCreating({ state: false })); dispatch(setToggleContainer({ state: true }))}} />
         </div>
     )
     return (

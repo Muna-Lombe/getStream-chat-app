@@ -1,13 +1,13 @@
 import React, { useState } from 'react'
-import { Channel, useChatContext, MessageTeam } from 'stream-chat-react'
-import { select, setShowInfo, setIsCreating, setIsEditing, setToggleContainer } from '../redux/slices/main/mainSlice';
+import { Channel, useChatContext, MessageTeam, ComponentContext } from 'stream-chat-react'
+import { select } from '../redux/slices/main/mainSlice';
 
 import {ChannelInner, CreateChannel, ChannelInfo} from '.'
 import { useSelector } from 'react-redux';
 
 const ChannelContainer = (/*{ isCreating, setIsCreating, createType, isEditing, setIsEditing, showInfo, setShowInfo, toggleContainer, setToggleContainer, isMobile }*/) => {
     const { channel,client } = useChatContext();
-
+    
 
     const isCreating = useSelector(select.isCreating)
     const isEditing = useSelector(select.isEditing)
@@ -20,12 +20,7 @@ const ChannelContainer = (/*{ isCreating, setIsCreating, createType, isEditing, 
         return(
             <div className="channel__container">
                 <CreateChannel
-                    isCreating = {isCreating}
-                    createType = {createType}
-                    setIsCreating = {setIsCreating}
-                    setToggleContainer={setToggleContainer}
-                    isMobile={isMobile}
-                 />
+                />
             </div>
         )
     }
@@ -55,7 +50,7 @@ const ChannelContainer = (/*{ isCreating, setIsCreating, createType, isEditing, 
                 Message={ (messageProps,i) => <MessageTeam key={i} {...messageProps} /> }
            
            >
-            <ChannelInner/>
+            <ChannelInner />
                
            </Channel>
         </div>

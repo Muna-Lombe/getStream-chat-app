@@ -132,7 +132,6 @@ const UserList = ({setSelectedUsers, activeChannelMembers, excludeChannelMembers
                     { id: 1},
                     {limit: 8}
                 );
-                
                 //Check if we have users
                 if (response.users.length){
                     let filteredUsers = null
@@ -205,7 +204,8 @@ const UserList = ({setSelectedUsers, activeChannelMembers, excludeChannelMembers
                         isEditing={isEditing} 
                         key={user.id} 
                         user={user}
-                        setSelectedUsers={ setSelectedUsers } />
+                        setSelectedUsers={ setSelectedUsers } 
+                    />
                 ))
             )}
         </ListContainer>

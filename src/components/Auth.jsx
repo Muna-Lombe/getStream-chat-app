@@ -1,5 +1,6 @@
 import axios from 'axios'
-import React, { useState } from 'react'
+import React, { useCallback, useRef, useState } from 'react'
+import { useMemo } from 'react'
 import Cookies from 'universal-cookie/es6'
 import { UserError } from '.'
 // import { serverUrl} from '../App'
@@ -20,13 +21,16 @@ const initialState = {
     fullName:"",
     username:"",
     password:"",
-    confirmPassword:"",
+    confirmPassword: false,
     phoneNumber:"",
-    avatarUrl:""
+    avatarUrl:"", 
+    anyRequiredMissing: true
 };
 
 // PROD url---
-let url = "https://getstream-chat-server-2.onrender.com/auth";
+// let url = "https://getstream-chat-server-2.onrender.com/auth";
+// DEV url
+let url = "http://localhost:5000/auth";
 
 
 export const dc = (en) => {
@@ -53,19 +57,81 @@ FA().then(res => res);
 
 const Auth =  () => {
     const [form, setForm] = useState(initialState)
+    const [[isConfirmedPassword, setIsConfirmedPassword], [hasNoRequiredMissing, setHasNoRequiredMissing]] = [useState(false), useState(false)]
     const [isSignup, setIsSignup] = useState(false);
     const [hasError, setHasError] = useState(false)
     const [errMsg, setErrMsg] = useState('')
-    const handleChange = (event) =>{
-        setForm({...form, [event.target.name]: event.target.value});
-    };
     
+    
+    // const isConfirmedPassword = useCallback((x)=>{
+    //     const inputForm = document.forms["login-signup-form"]
+    //     return inputForm?.confirmPassword?.value === inputForm?.password?.value
+    // }, [document.forms["login-signup-form"]?.confirmPassword?.value])
+
+    // const hasNoRequiredMissing = useCallback((x) => {
+    //     const inputForm = document.forms["login-signup-form"]
+    //     return Object.values(inputForm).every((el)=> el.value.length > 2)
+    // }, [])
+    
+    
+    const handleChange = (event) =>{
+        event.preventDefault()
+        event.stopPropagation()
+        const inputForm = document.forms["login-signup-form"]
+        // Object.entries(inputForm).forEach((e)=> console.log(e[1].name, "=>", e[1].value))
+        console.log(isConfirmedPassword(), hasNoRequiredMissing())
+        
+        // setIsConfirmedPassword(document.forms["login-signup-form"]?.confirmPassword?.value === inputForm?.password?.value)
+        // setHasNoRequiredMissing(Object.values(inputForm).every((el) => el.value.length > 2))
+        if(event.target.name === "confirmPassword"){
+            console.log("", event.target.value)
+            setIsConfirmedPassword(document.forms["login-signup-form"]?.confirmPassword?.value === inputForm?.password?.value)
+            // isConfirmedPassword()
+            // hasNoRequiredMissing()
+            // return refForm.current[event.target.name] = event.target.value.length > 2 ? form.password === event.target.value : false//setForm({ ...form, [event.target.name]: event.target.value.length> 2 ? form.password === event.target.value : false });
+        }
+        setHasNoRequiredMissing(Object.values(inputForm).every((el) => el.value.length > 2))
+
+        // if(refForm.current.anyRequiredMissing){
+        //     const misnReq = Object.entries(refForm.current).length > 3 ? 
+        //         Object.entries(refForm.current)
+        //             .filter((el) => el[0] !== "anyRequiredMissing")
+        //             .some((el) => el[1].length < 2) 
+        //         : true
+        //     console.log("misng",misnReq)
+        //     // return refForm.current["anyRequiredMissing"] = misnReq
+
+        //     // return setForm({
+        //     //     ...form, 
+        //     //     "anyRequiredMissing": misnReq
+        //     // })
+
+        // }
+        // setForm({...form, [event.target.name]: event.target.value});
+    };
+    // const missingRequiredRef = useRef(false)
+    const InputWithRef = ({name, type, placeholder}) => {
+        
+        const ref = useRef()
+        return(
+            <input
+                name={name}
+                type={type}
+                placeholder={placeholder}
+                onChange={handleChange}
+                ref={ref}
+                value={ref?.current?.value}
+                required
+            />
+        )
+    }
     const handleSubmit = async (event) =>{
         event.preventDefault();
-        
-        const { username, password, phoneNumber, avatarUrl} = form;
-        
+        const inputForm = document.forms["login-signup-form"]
 
+        const [ username=username.value, password=password.value, phoneNumber=phoneNumber.value, avatarUrl=avatarUrl.value] = inputForm;
+        
+        console.log("is beign logged ...")
         const res = await axios.post(`${url}/${isSignup ? 'signup' : 'login'}`, {fullName: form.fullName, username, password, phoneNumber, avatarUrl})
         .then((result) => {
             console.log("res", result)
@@ -122,16 +188,8 @@ const Auth =  () => {
         setIsSignup((prevIsSignup) => !prevIsSignup);
     }
     
-    // const Error ={
-    const UserNotFound = UserError//()=>{ return(
-    //             errMsg
-    //             ? <p>{errMsg}</p>
-    //             : <p >
-    //                 You do not have an account yet, <span onClick={() => switchMode()}>create an account</span> to and login
-    //               </p>
-    //         )}//,
-    // //     InvalidEmail:('')
-    // // }
+    
+    const UserNotFound = UserError
     return (
         <div className='auth__form-container'>
             <div className="auth__form-container_fields">
@@ -144,82 +202,56 @@ const Auth =  () => {
                         {hasError && <UserNotFound errMsg={errMsg} switchMode={switchMode} />}
                     </div>
                         
-                    <form onSubmit={()=>{}}>
+                    <form name='login-signup-form' onSubmit={()=>{}}>
                         
                         {isSignup && (
                             <div className="auth__form-container_fields-content_input with_signup">
                                 <label htmlFor="fullName">Full Name</label>
-                                <input 
-                                name="fullName"
-                                type="text"
-                                placeholder="Full name"
-                                onChange={handleChange} 
-                                required
-                                />
+                                <InputWithRef name={"fullName"} type={"text"} placeholder={"Full name"}/>
                             </div>
                             
                         )}
                         <div className="auth__form-container_fields-content_input">
-                            <label htmlFor="username">User name</label>
-                            <input 
-                            name="username"
-                            type="text"
-                            placeholder="User name"
-                            onChange={handleChange} 
-                            required
-                            />
+                            <label htmlFor="username" >User name</label>
+                            
+                            <InputWithRef name={"username"} type={"text"} placeholder={"User name"} />
+
                         </div>
                         {isSignup && (
                             <div className="auth__form-container_fields-content_input with_signup">
                                 <label htmlFor="phoneNumber">Phone number</label>
-                                <input 
-                                name="phoneNumber"
-                                type="text"
-                                placeholder="Phone number"
-                                onChange={handleChange} 
-                                required
-                                />
+                                
+                                <InputWithRef name={"phoneNumber"} type={"text"} placeholder={"Phone number"} />
+
                             </div>
                             
                         )}
                         {isSignup && (
                             <div className="auth__form-container_fields-content_input with_signup">
                                 <label htmlFor="avatarUrl">Avatar Url</label>
-                                <input 
-                                name="avatarUrl"
-                                type="text"
-                                placeholder="Avatar Url"
-                                onChange={handleChange} 
-                                required
-                                />
+                                
+                                <InputWithRef name={"avatarUrl"} type={"text"} placeholder={"Link to avatar"} />
+
                             </div>
                             
                         )}
                         <div className="auth__form-container_fields-content_input">
                             <label htmlFor="password">Password</label>
-                            <input 
-                            name="password"
-                            type="password"
-                            placeholder="Full name"
-                            onChange={handleChange} 
-                            required
-                            />
+                            
+                            <InputWithRef name={"password"} type={"password"} placeholder={"Password"} />
+
                         </div>
                         {isSignup && (
-                            <div className="auth__form-container_fields-content_input with_signup">
+                            <div className={"auth__form-container_fields-content_input with_signup" + (isConfirmedPassword ? " " : " no-match")}>
                                 <label htmlFor="confirmPassword">Confirm Password</label>
-                                <input 
-                                name="confirmPassword"
-                                type="password"
-                                placeholder="Confirm Password"
-                                onChange={handleChange} 
-                                required
-                                />
+                                
+                                <InputWithRef name={"confirmPassword"} type={"password"} placeholder={"Confirm Password"} />
+
                             </div>
                             
                         )}
-                        <div className="auth__form-container_fields-content_button">
-                            <button onClick={handleSubmit}>
+                        <div className={"auth__form-container_fields-content_button" + ((isSignup && hasNoRequiredMissing)? " missing-required" : " ")}>
+                            <button onClick={handleSubmit} disabled={isSignup && hasNoRequiredMissing}>
                             {isSignup ? "Sign Up" : "Sign In"}
                             </button>
                         </div>
@@ -227,8 +259,8 @@ const Auth =  () => {
                     <div className="auth__form-container_fields-account">
                         <p>
                             {isSignup
-                                ? "Already have an account?"
-                                : "Don't have an account?"
+                                ? "Already have an account? "
+                                : "Don't have an account? "
                             }
                             <span onClick={switchMode}>
                               {isSignup ? "Sign In" : "Sign Up"}

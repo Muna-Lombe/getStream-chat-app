@@ -28,7 +28,7 @@ const SearchResult = ({ channel, focusedId, type, setChannel, setToggleContainer
         onClick={() => {
           setChannel(channel)
           if(setToggleContainer) {
-            setToggleContainer((prevState) => !prevState)   
+            setToggleContainer()   
           }
         }}
         className={focusedId === channel.id ? 'channel-search__result-container__focused' : 'channel-search__result-container' }
@@ -44,7 +44,7 @@ const SearchResult = ({ channel, focusedId, type, setChannel, setToggleContainer
       onClick={async () => {
         channelByUser({ client, setActiveChannel, channel, setChannel })
         if(setToggleContainer) {
-            setToggleContainer((prevState) => !prevState)   
+            setToggleContainer()   
         }
       }}
       className={focusedId === channel.id ? 'channel-search__result-container__focused' : 'channel-search__result-container' }

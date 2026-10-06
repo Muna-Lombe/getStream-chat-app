@@ -1,7 +1,7 @@
 import axios from 'axios'
 import React, { useState } from 'react'
-import { Avatar, useChat, useChatContext, useUserHandler } from 'stream-chat-react'
-import Cookies from 'universal-cookie'
+import { Avatar } from 'stream-chat-react'
+
 //assets
 import {EditIcon, OnlineStatusIcon,  SaveIcon, CloseBtn, UserIcon}  from '../assets'
 

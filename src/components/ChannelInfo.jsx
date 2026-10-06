@@ -1,4 +1,4 @@
-import React, {useState} from 'react'
+import React, {useRef, useState} from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { useChatContext } from 'stream-chat-react'
 import Cookies from 'universal-cookie/es6'
@@ -17,7 +17,7 @@ const ChannelInfo = () => {
     const isEditing = useSelector(select.isEditing)
     const showInfo = useSelector(select.showInfo)
     const dispatch = useDispatch()
-    const [ activeChannelMembers, setActiveChannelMembers] = useState(
+    const activeChannelMembers = useRef(
         Object.values(channel.state.members).map((member) => {
             if (
                 member.user_id === channel.data.created_by.id
@@ -76,7 +76,7 @@ const ChannelInfo = () => {
          try {
             await client.deleteChannels(cids,{options: {hard_delete: true}});
             console.log('delete res: ', res)
-            setShowInfo((prevState) => !prevState)
+            dispatch(setShowInfo({ state: !showInfo }))
          } catch (error) {
             console.log('delete eror: ', error)
              
@@ -91,7 +91,7 @@ const ChannelInfo = () => {
             <div className="channel-info__header">
 
                 <p>
-                    <span onClick={() => dispatch(setShowInfo(!showInfo))} >
+                    <span onClick={() => dispatch(setShowInfo({state:!showInfo}))} >
                         <BackIcon />   
                     </span>
                 </p>
@@ -108,17 +108,17 @@ const ChannelInfo = () => {
                     
                     {
                         !isEditing
-                        ? <span style={{ display: 'flex' }} onClick={() => dispatch(setIsEditing(!isEditing))}>
+                        ? <span style={{ display: 'flex' }} onClick={() => dispatch(setIsEditing({state:!isEditing}))}>
                             <EditIcon />
                         </span> //
-                        : <CloseBtn onClick={()=>dispatch(setIsEditing(!isEditing))} />
+                        : <CloseBtn onClick={()=>dispatch(setIsEditing({state:!isEditing}))} />
                     }
                 </p>
                 
             </div>
             {
                 isEditing
-                ?  <EditChannel setIsEditing={(state)=>dispatch(setIsEditing(state))} isEditing={isEditing} excludeChannelMembers={activeChannelMembers}/>
+                ?  <EditChannel setIsEditing={()=>dispatch(setIsEditing({state:!isEditing}))} isEditing={isEditing} excludeChannelMembers={activeChannelMembers}/>
                 :  <UserList activeChannelMembers={activeChannelMembers} />
 
             }
